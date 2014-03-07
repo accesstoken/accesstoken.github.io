@@ -149,7 +149,7 @@ You can also [write math equations](http://www.idryman.org/blog/2012/03/10/writi
 (e.g. 
 $$J_\alpha(x) = \sum\limits_{m=0}^\infty \frac{(-1)^m}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}$$
 ) 
-using [kramdown](http://kramdown.rubyforge.org/) and [MathJax](http://www.mathjax.org/).
+using [kramdown](http://kramdown.rubyforge.org/) and [MathJax](http://www.mathjax.org/) (Update: see [here](http://www.lucypark.kr/blog/2013/02/25/mathjax-kramdown-and-octopress/)).
 
 
 Now, run the command below to generate posts and pages into the public directory.
