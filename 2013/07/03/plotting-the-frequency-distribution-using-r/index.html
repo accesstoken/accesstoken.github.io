@@ -1,0 +1,634 @@
+<!-- This goes in the document HEAD so IE7 and IE8 don't cry -->
+<!--[if lt IE 9]>
+<style type="text/css">
+  table.gradienttable th {
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d5e3e4', endColorstr='#b3c8cc',GradientType=0 );
+    position: relative;
+    z-index: -1;
+  }
+  table.gradienttable td {
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebecda', endColorstr='#ceceb7',GradientType=0 );
+    position: relative;
+    z-index: -1;
+  }
+</style>
+<![endif]-->
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7" prefix="og: http://ogp.me/ns#"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8" prefix="og: http://ogp.me/ns#"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en" prefix="og: http://ogp.me/ns#"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Plotting the frequency distribution using R - Meta Data Science</title>
+  <meta name="author" content="Massoud Seifi">
+
+  
+  <meta name="description" content="How to plot the frequency distribution using R">
+  <meta name="keywords" content="R, frequency, distribution, plot, filter, read, csv, barplot">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Meta Data Science" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Oswald:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Avenir:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
+<meta property="og:image" content="/images/metadatascience.gif" />
+<link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-38669216-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  <!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+	var sc_project=8892392; 
+	var sc_invisible=1; 
+	var sc_security="3020fdf3"; 
+	var scJsHost = (("https:" == document.location.protocol) ? "https://secure." : "http://www.");
+	document.write("<sc"+"ript type='text/javascript' src='" + scJsHost+ "statcounter.com/counter/counter.js'></"+"script>");
+</script>
+<noscript>
+	<div class="statcounter">
+		<a title="web analytics" href="http://statcounter.com/" target="_blank">
+			<img class="statcounter" src="http://c.statcounter.com/8892392/0/3020fdf3/1/" alt="web analytics">
+		</a>
+	</div>
+</noscript>
+<!-- End of StatCounter Code for Default Guide -->
+</head>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' alt='logo' height="71" width="85"/>   Meta Data Science</a></h1>
+  
+    <h2><span style="font-family:Oswald;">By Massoud Seifi, Ph.D. Data Scientist</span></h2>
+  
+
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:metadatascience.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/publications">Publications</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Plotting the Frequency Distribution Using R</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T12:22:00-07:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>Introduction</h3>
+
+<p><a href="http://www.r-project.org/">R</a> is an open source language and environment for statistical computing and graphics.
+It&rsquo;s an implementation of the <a href="http://en.wikipedia.org/wiki/S_(programming_language">S language</a>) which was developed at Bell Laboratories by John Chambers and colleagues.
+R provides a wide variety of statistical and graphical techniques, including linear and nonlinear modeling, classical statistical tests, time-series analysis, classification, clustering, and others.
+It is also an interpreted language and can be accessed through a command-line interpreter: For example, if a user types &ldquo;2+2&rdquo; at the R command prompt and press enter, the computer replies with &ldquo;4&rdquo;.
+R is freely available under the GNU General Public License.</p>
+
+<h3>Plotting The Frequency Distribution</h3>
+
+<h4>Frequency distribution</h4>
+
+<p>A frequency distribution shows the number of occurrences in each category of a categorical variable.
+For example, in a sample set of users with their favourite colors, we can find out how many users like a specific color.</p>
+
+<h4>Data set</h4>
+
+<p>Suppose a data set of 30 records including user ID, favorite color and gender:</p>
+
+<figure class='code'><figcaption><span>Sample Set  (sample.csv)</span> <a href='/downloads/code/sample.csv'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>ID,Color,Gender
+</span><span class='line'>792141B,Blue,Male
+</span><span class='line'>795156A,Blue,Male
+</span><span class='line'>795156B,Blue,Male
+</span><span class='line'>795156C,Blue,Male
+</span><span class='line'>795156E,Blue,Male
+</span><span class='line'>795156G,Blue,Female
+</span><span class='line'>795156I,Blue,Male
+</span><span class='line'>795156J,White,Male
+</span><span class='line'>795156M,Red,Male
+</span><span class='line'>795156N,Blue,Male
+</span><span class='line'>795156O,Green,Male
+</span><span class='line'>795156P,Red,Male
+</span><span class='line'>795156Q,Blue,Male
+</span><span class='line'>795156S,White,Male
+</span><span class='line'>795156T,Blue,Male
+</span><span class='line'>795156W,Red,Female
+</span><span class='line'>800731A,Red,Male
+</span><span class='line'>800731C,Blue,Male
+</span><span class='line'>800731E,Blue,Male
+</span><span class='line'>800731F,Blue,Female
+</span><span class='line'>800731G,Red,Male
+</span><span class='line'>800731I,Blue,Female
+</span><span class='line'>800731K,Blue,Female
+</span><span class='line'>800731M,Blue,Male
+</span><span class='line'>800731N,Blue,Female
+</span><span class='line'>800731O,Blue,Female
+</span><span class='line'>800731Q,Blue,Male
+</span><span class='line'>800731W,Blue,Male
+</span><span class='line'>800731X,Red,Male
+</span><span class='line'>800731Y,Red,Male
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Reading the csv file</h4>
+
+<p>Let&rsquo;s start with reading the csv file:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>data &lt;- read.csv(file = &#39;sample.csv&#39;, header = TRUE, sep = &#39;,&#39;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first argument which is mandatory is the name of file. The second argument indicates whether or not the first row is a set of labels and the third argument indicates the delimiter. The above command will read in the csv file and assign it to a variable called &ldquo;data&rdquo;.</p>
+
+<p>You can use the following command to see the list of column names:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>names(data)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>which results:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[1] &quot;ID&quot;     &quot;Color&quot;  &quot;Gender&quot;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Or you can use following command to see a summary of the data:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>summary(data)
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>   ID       Color       Gender
+</span><span class='line'> 792141B: 1   Blue :20   Female: 7
+</span><span class='line'> 795156A: 1   Green: 1   Male  :23
+</span><span class='line'> 795156B: 1   Red  : 7
+</span><span class='line'> 795156C: 1   White: 2
+</span><span class='line'> 795156E: 1
+</span><span class='line'> 795156G: 1
+</span><span class='line'> (Other):24
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you see, the number of occurrences of each color is shown in the summary.</p>
+
+<h4>Table function</h4>
+
+<p><em>table()</em>  uses the cross-classifying factors to build a contingency table of the counts at each combination of factor levels.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>table(data$Color)
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'> Blue Green   Red White
+</span><span class='line'>   20     1     7     2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Plotting</h4>
+
+<p>Now we can plot it easily using the <em>barplot</em> command:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>barplot(table(data$Color))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>Save the plot as an image</h4>
+
+<p>I can see the plot on my machine, but to put it here on my weblog, I have to save it as an image:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>dev.copy(png, &#39;freq.png&#39;)
+</span><span class='line'>dev.off()
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here you go&hellip;</p>
+
+<p><img class="center" src="/images/freq.png" width="380" height="380"></p>
+
+<h4>Factor</h4>
+
+<p>The <em>factor</em> function is used to create a factor (or category) from a vector.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>factor(data$Color)
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>[1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class='line'>[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class='line'>[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class='line'>Levels: Blue Green Red White
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Levels is a unique set of values in the vector.</p>
+
+<p>Now, suppose that &ldquo;Yellow&rdquo; was also an option for the users but nobody has chosen it as the favourite color.
+We can use the <em>factor</em> command to customize the categories:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'> [1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class='line'>[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class='line'>[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class='line'>Levels: Blue Green Yellow Red White
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, we can see Yellow in the frequency distribution:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>table(factor(data$Color, levels = c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)))
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>  Blue  Green Yellow    Red  White
+</span><span class='line'>    20      1      0      7      2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we can see it on the plot:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>barplot(table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img class="center" src="/images/freq1.png" width="380" height="380"></p>
+
+<p>if you want to see the percentages instead of the values, you can try this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>t &lt;- table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)))
+</span><span class='line'>barplot(t / sum(t))
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img class="center" src="/images/freq2.png" width="380" height="380"></p>
+
+<h4>Filtering</h4>
+
+<p>Now, let&rsquo;s imagine that we want to plot the frequency distribution of favourite colors for men and women separately.
+The following commands create two subsets of data by filtering the gender and store it to two different variables (Don&rsquo;t forget the comma!):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>men &lt;- data[data$Gender == &#39;Male&#39;,]
+</span><span class='line'>
+</span><span class='line'>women &lt;- data[data$Gender == &#39;Female&#39;,]
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>now we can plot the distributions seperately:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>l &lt;- c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)
+</span><span class='line'>
+</span><span class='line'>barplot(table(factor(men$Color, levels = l, main = &#39;Men&#39;)
+</span><span class='line'>
+</span><span class='line'>barplot(table(factor(women$Color, levels = l, main = &#39;Women&#39;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="/images/freq_men.png" width="380" height="380"><img src="/images/freq_women.png" width="380" height="380"></p>
+
+<h4>Colors and Labels</h4>
+
+<p>Do you like colors and labels?! Here you go&hellip;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>l &lt;- c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)
+</span><span class='line'>
+</span><span class='line'>barplot(table(factor(data$Color, levels = l)) , col = c(&#39;blue&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;white&#39;), xlab = &#39;Favourite Color&#39;, ylab = &#39;Number Of Users&#39;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img class="center" src="/images/freq3.png" width="480" height="480"></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Massoud Seifi</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T12:22:00-07:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/tutorial/'>Tutorial</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/" data-via="accesstoken" data-counturl="http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/" title="Previous Post: Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID">&laquo; Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</a>
+      
+      
+        <a class="basic-alignment right" href="/2013/08/13/how-to-get-twitter-username-from-twitter-id/" title="Next Post: How to get Twitter username from Twitter ID">How to get Twitter username from Twitter ID &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>
+  	I am a Data Scientist with a formal background in Computer Science and Mathematics (especially Graph Theory).
+  	I have a high curiosity to make discoveries in the world of big data and a passion to find innovative solutions for complex challenges.</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/02/27/random-sampling-from-very-large-files/">Random sampling from very large files</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/13/how-to-get-twitter-username-from-twitter-id/">How to get Twitter username from Twitter ID</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/03/plotting-the-frequency-distribution-using-r/">Plotting the frequency distribution using R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">Inferring Facebook account creation date from Facebook User ID</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/AccessToken" data-widget-id="352835310855528450">Tweets by @AccessToken</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Massoud Seifi -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'metadatascience';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/';
+        var disqus_url = 'http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

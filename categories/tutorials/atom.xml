@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Tutorials | Meta Data Science]]></title>
+  <link href="http://metadatascience.com/categories/tutorials/atom.xml" rel="self"/>
+  <link href="http://metadatascience.com/"/>
+  <updated>2014-03-06T16:48:55-08:00</updated>
+  <id>http://metadatascience.com/</id>
+  <author>
+    <name><![CDATA[Massoud Seifi]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Random sampling from very large files]]></title>
+    <link href="http://metadatascience.com/2014/02/27/random-sampling-from-very-large-files/"/>
+    <updated>2014-02-27T14:49:00-08:00</updated>
+    <id>http://metadatascience.com/2014/02/27/random-sampling-from-very-large-files</id>
+    <content type="html"><![CDATA[<h3>Random Sampling</h3>
+
+<p><a href="http://en.wikipedia.org/wiki/Sampling_(statistics">Random sampling</a>) from a set of entities means any entity has the same chance of selection as any other such entities.
+Suppose we want to randomly select $k$ lines from a large text file containing hundreds of millions of lines. We desire that the probability of being selected be the same for every line in the file.</p>
+
+<h3>Algorithm 1</h3>
+
+<p>The first approach which comes in mind is to</p>
+
+<ul>
+<li>Count the number of lines in the file,</li>
+<li>Create a sorted random set of $k$ integers between 1 and number of lines in the file,</li>
+<li>Iterate over the random integers and read the file line by line.
+Pick the line if the line number matches one of the the random integers.</li>
+</ul>
+
+
+<p>This algorithm in Python is shown below.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Sampling 1  (random_sampler1.py)</span> <a href='/downloads/code/random_sampler1.py'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>		<span class="n">linecount</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+</span><span class='line'>		<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>		<span class="n">random_linenos</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">linecount</span><span class="p">),</span> <span class="n">k</span><span class="p">),</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>		<span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>		<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span class='line'>			<span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">lineno</span><span class="p">:</span>
+</span><span class='line'>				<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class='line'>				<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_linenos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>					<span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>				<span class="k">else</span><span class="p">:</span>
+</span><span class='line'>					<span class="k">break</span>
+</span><span class='line'>	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h3>Algorithm 2: Reservoir sampling</h3>
+
+<p>As you see, in previous algorithm, we scan the file two times. First time for counting the number of lines in the file, and second time to select random lines.
+There are some algorithms which even work without knowing in advance the total number of items. One classical algorithm form Alan Waterman called <a href="http://en.wikipedia.org/wiki/Reservoir_sampling">Reservoir sampling</a> is exposed in the second volume of Donald Knuth&rsquo;s &ldquo;<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">The Art of Computer Programming</a>&rdquo;.</p>
+
+<p>Suppose we want to select $k$ items from a set of items. We start by filling the “reservoir” with the first $k$ items, and then for each $i^{th}$ item remaining in the set, we generate a random number $r$ between $1$ and $i$. If $r$ is less than $k$, we replace the $r^{th}$ item of the reservoir with the $i^{th}$ item of the set. We continue processing items until we reach the end of the set.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Sampling 2  (random_sampler2.py)</span> <a href='/downloads/code/random_sampler2.py'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>		<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span class='line'>			<span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+</span><span class='line'>				<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class='line'>			<span class="k">else</span><span class="p">:</span>
+</span><span class='line'>				<span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</span><span class='line'>				<span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+</span><span class='line'>					<span class="n">sample</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+</span><span class='line'>	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>It is easy to prove by induction that this approach works and each line has the same probability of being selected as the other lines:</p>
+
+<p>Suppose we need to collect a random sample of $k$ items from a list of items coming as an online stream. We desire that after seeing $n$ item, each item in the sample set had $\frac{k}{n}$ chance to be there.</p>
+
+<p>For example, suppose $k=10$. According to the algorithm, the first $10$ items go directly to the reservoir. So for them, the probability of being selected is $\frac{10}{10} = 1 \checkmark$.</p>
+
+<p>Now, suppose the $11^{th}$ item comes. The desired probability is now $\frac{k}{n} = \frac{10}{11}$. We have:</p>
+
+<ul>
+<li><p>According to the reservoir sampling algorithm above, the probability of $11^{th}$ item to being selected is $\frac{10}{11} \checkmark$.</p></li>
+<li><p>For the items already in the reservoir, the chance of being in the sample set and also remaining in the sample set after seeing the $11^{th}$ item, is their previous probability to be there, multiple the probability of not being replace by the $11^{th}$. So we have:</p>
+
+<p>  Pr = Probability that a selected item remains in the reservoir</p>
+
+<p>  = Previous probability to be there * Probability of not being replaced</p>
+
+<p>  = Previous probability to be there * ( 1 &ndash; Probability of being replaced by $11^{th}$ item)</p>
+
+<p>  The chance that an item in the reservoir being replaced with $11^{th}$ item is the probability of $11^{th}$ item to be selected, which is $\frac{10}{11}$, multiple the probability of being the replacement candidate between 10 items, which is $\frac{1}{10}$. So we have: $$Pr = \frac{10}{10}<em>(1-\frac{10}{11}</em>\frac{1}{10})=\frac{10}{11} \checkmark$$.</p></li>
+</ul>
+
+
+<p>Likewise, for the $12^{th}$ item we have:</p>
+
+<ul>
+<li><p>Probability of $12^{th}$ item to being selected is $\frac{10}{12} \checkmark$.</p></li>
+<li><p>For the items already in the reservoir: $$Pr = \frac{10}{11}<em>(1-\frac{10}{12}</em>\frac{1}{10})=\frac{10}{12} \checkmark$$</p></li>
+</ul>
+
+
+<p>And this can be extended for the $n^{th}$ item. Although reservoir sampling is an interesting approach but it is too slow for our problem here.</p>
+
+<h3>Algorithm 3</h3>
+
+<p>There is another interesting approach when the lines have approximately the same length (for example, we deal with a huge list of email addresses). In this case, there is a correlation between line numbers and the file size. So, we can use the algorithm below:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Random Sampling 3  (random_sampler3.py)</span> <a href='/downloads/code/random_sampler3.py'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class='line'>	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>		<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>		<span class="n">filesize</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>		<span class="n">random_set</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">filesize</span><span class="p">),</span> <span class="n">k</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+</span><span class='line'>			<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">random_set</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class='line'>			<span class="c"># Skip current line (because we might be in the middle of a line) </span>
+</span><span class='line'>			<span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'>			<span class="c"># Append the next line to the sample set </span>
+</span><span class='line'>			<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class='line'>
+</span><span class='line'>	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Basically, we get the file size. Create a sorted random set of k random positions in the file (between 1 and the file size). For each random position, we seek that position, skip a line, and put the next line to the sample set.</p>
+
+<h3>Benchmark</h3>
+
+<p>The table below shows the elapsed time for selecting 1000 lines from a large (~ 40M lines) and a very large file(~ 300M lines) for each algorithm. We see that the algorithm 3 is much faster. As I mentioned before, the only assumption is that the lines should have approximately the same length.</p>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th align="left"> Algorithm           </th>
+<th align="right"> File 1 (~ 40M lines)  </th>
+<th align="right"> File 2 (~ 300M lines) </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td align="left"> random_sampler1.py  </td>
+<td align="right"> 6.641s                </td>
+<td align="right"> 1m14.184s             |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> random_sampler2.py  </td>
+<td align="right"> 50.406s               </td>
+<td align="right"> 6m51.078s             |</td>
+</tr>
+<tr>
+<td></td>
+<td align="left"> random_sampler3.py  </td>
+<td align="right"> 0.019s                </td>
+<td align="right"> 3.119s                |</td>
+</tr>
+</tbody>
+</table>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Blogging With Octopress]]></title>
+    <link href="http://metadatascience.com/2013/02/18/blogging-with-octopress/"/>
+    <updated>2013-02-18T13:18:00-08:00</updated>
+    <id>http://metadatascience.com/2013/02/18/blogging-with-octopress</id>
+    <content type="html"><![CDATA[<p><img class="right" src="/images/octopress.png" width="227" height="227" title="Octopress" >
+<a href="http://octopress.org/">Octopress</a> is a “blogging framework for hackers” according to its author, &ldquo;Brandon Mathis&rdquo;.
+It is built in Ruby and based on the static web-site generator
+<a href="http://jekyllrb.com/">Jekyll</a> which powers <a href="http://pages.github.com/">GitHub Pages</a>.
+I tried setting up Octopress (on GitHub) by following various tutorials I found online.
+Not all of them worked properly.
+So, now that I got it working, this tutorial details what worked for me;
+and how I was able to get Octopress working on GitHub.</p>
+
+<h3>Install Octopress</h3>
+
+<p>Here you can find instructions on how to install Octopress on Ubuntu (I currently use version 12.10):</p>
+
+<ul>
+<li><h4>Install <a href="http://git-scm.com/">Git</a> using the guide <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</h4></li>
+<li><h4>Install Ruby 1.9.3 using the commands below.</h4></li>
+</ul>
+
+
+<p>``` bash
+cd
+git clone git://github.com/sstephenson/rbenv.git .rbenv</p>
+
+<p>echo &lsquo;export PATH=&ldquo;$HOME/.rbenv/bin:$PATH&rdquo;&rsquo; >> ~/.bashrc
+echo &lsquo;eval &ldquo;$(rbenv init &ndash;)&rdquo;&rsquo; >> ~/.bashrc
+source ~/.bashrc
+git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build</p>
+
+<p>rbenv install 1.9.3-p194
+rbenv rehash
+rbenv global 1.9.3-p194
+```</p>
+
+<p>Run <code>ruby --version</code> to be sure is Ruby 1.9.3 installed properly.</p>
+
+<p>Note that these instructions are a bit different from those given in
+<a href="http://octopress.org/docs/setup/rbenv/">Octopress Documentation</a>:
+I changed <em>.bash_profile</em> to <em>.bashrc</em> and <em>1.9.3-p0</em> to <em>1.9.3-p194</em> to make it work.</p>
+
+<ul>
+<li><h4>Setup Octopress</h4></li>
+</ul>
+
+
+<p>``` bash</p>
+
+<h1>Get Octopress</h1>
+
+<p>git clone git://github.com/imathis/octopress.git octopress</p>
+
+<h1>Install dependencies.</h1>
+
+<p>cd octopress
+gem install bundler
+rbenv rehash
+bundle install</p>
+
+<h1>Install the default Octopress theme.</h1>
+
+<p>rake install
+```</p>
+
+<hr />
+
+<br/>
+
+
+<h3>Deploying to GitHub Pages</h3>
+
+<ul>
+<li><h4>Create a GitHub Account</h4>
+
+<p>It has a very easy <a href="https://github.com/signup/">signup</a> process. Be creative to choose a cool username (My username is accesstoken. Is it cool?!). It would be good for your reputation if you can use the same username everywhere, e.g. on Twitter (You can follow me on Twitter with the same username: <a href="http://twitter.com/accesstoken">http://twitter.com/accesstoken</a>).</p></li>
+<li><h4>Create a GitHub repository for the blog</h4>
+
+<p>Create a new GitHub repository and name the repository with your user name: <em>[your-username].github.com</em></p></li>
+<li><h4>Generate a SSH key</h4>
+
+<p>Create a SSH key and add it to your GitHub account using the instructions <a href="https://help.github.com/articles/generating-ssh-keys">here</a>.</p></li>
+<li><h4>Deploy</h4>
+
+<p>Now, run the following command:</p></li>
+</ul>
+
+
+<p><code>bash
+rake setup_github_pages
+</code></p>
+
+<p>It will ask you to enter the read/write url for your repository.
+Enter the SSH read/write url for your repository which should be like <em>git@github.com:username/username.github.com.git</em>.</p>
+
+<p>Continue by running the following commands:</p>
+
+<p><code>bash
+rake generate
+rake deploy
+</code></p>
+
+<p>Commit everything in Git:</p>
+
+<p><code>bash
+git add .
+git commit -m 'initial commit'
+git push origin source
+</code></p>
+
+<p>Now, you should have two branches, <em>source</em> and <em>master</em> on your GitHub repository.
+The <em>source</em> branch contains the files that are used to generate the blog and the <em>master</em> contains the blog itself.</p>
+
+<p>After a few minutes, you should be able to see the default Octopress page here: <em><a href="http://">http://</a>[your-username].github.com/</em>. Hooray!</p>
+
+<hr />
+
+<br/>
+
+
+<h3>Start blogging</h3>
+
+<ul>
+<li><h4>Configure your blog</h4></li>
+</ul>
+
+
+<p>You can find a simple guide <a href="http://octopress.org/docs/configuring/">here</a> for configuring your Octopress blog.</p>
+
+<ul>
+<li><h4>Create a new post</h4></li>
+</ul>
+
+
+<p><code>bash
+rake 'new_post[Title]'
+</code></p>
+
+<p>This will tell you the name of the <em>Markdown</em> file for your new posting. Just open the file and start typing.</p>
+
+<h2>``` html</h2>
+
+<p>layout: post
+title: &ldquo;Blogging With Octopress&rdquo;
+date: 2013-02-18 13:18
+comments: true
+categories: Tutorials
+description: &ldquo;A tutorial for how to use Octopress for blogging.&rdquo;</p>
+
+<h2>keywords: &ldquo;octopress, tutorial for octopress, blogging with octopress&rdquo;</h2>
+
+<h1>Hello World!</h1>
+
+
+<p>This is a link to <a href='http://octopress.org/'>Octopress</a>.
+```
+You can use <a href="http://daringfireball.net/projects/markdown/basics">Markdown syntax</a>.
+Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</p>
+
+<p>```</p>
+
+<h1>Hello World!</h1>
+
+<p>This is a link to <a href="http://octopress.org/">Octopress</a>.
+```</p>
+
+<p>You can also <a href="http://www.idryman.org/blog/2012/03/10/writing-math-equations-on-octopress">write math equations</a>
+(e.g.
+$$J<em>\alpha(x) = \sum\limits</em>{m=0}^\infty \frac{(-1)<sup>m</sup>}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}$$
+)
+using <a href="http://kramdown.rubyforge.org/">kramdown</a> and <a href="http://www.mathjax.org/">MathJax</a>.</p>
+
+<p>Now, run the command below to generate posts and pages into the public directory.</p>
+
+<p><code>bash
+rake generate
+</code></p>
+
+<p>If you want to see a preview of your blog before publishing it to the server, run the command below.</p>
+
+<p><code>bash
+rake preview
+</code></p>
+
+<p>You will see a message like this:</p>
+
+<p><em>&gt;&gt;&gt; Compass is polling for changes. Press Ctrl-C to Stop.</em></p>
+
+<p>Keep it listening (don&rsquo;t press Ctrl-C), open your browser and open *<a href="http://localhost:4000*">http://localhost:4000*</a> to preview your post.</p>
+
+<p>When you are happy with your new post, you can publish it to the server.</p>
+
+<p><code>bash
+rake deploy
+</code></p>
+
+<ul>
+<li><h4>Create a new Page</h4>
+
+<p>If you want to create, for example, the “about” page for your blog, you need to run the command below.</p></li>
+</ul>
+
+
+<p><code>bash
+rake new_page["about"]
+</code></p>
+
+<p>This will create a new file at <em>source/about/index.markdown</em> that you can edit to write about yourself.
+Running <code>rake generate</code> command will generate <em>public/about/index.html</em> from the <em>index.markdown</em>
+and <code>rake deploy</code> will push changes to the server.</p>
+
+<p>You can add an “About” link in the navigation bar for this page.
+Simply, edit the file <em>source/_includes/custom/navigation.html</em> and add</p>
+
+<p><code>html
+&lt;li&gt;&lt;a href="http://metadatascience.com/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+</code></p>
+
+<p>Generate and deploy can be done in a single command:</p>
+
+<p><code>bash
+rake gen_deploy
+</code></p>
+
+<ul>
+<li><h4>Enable comments</h4></li>
+</ul>
+
+
+<p>Create a <a href="http://disqus.com/">disqus</a> account and add your disqus short name in <em>_config.yml</em> to enable comments on your blog.</p>
+
+<p>Done!</p>
+
+<hr />
+
+<br/>
+
+
+<h3>Mapping your custom domain to your GitHub pages</h3>
+
+<p>Here you can find instructions on how to map your custom domain to your blog:</p>
+
+<ul>
+<li><h4>Register your domain</h4>
+
+<p>  I registered my domain <em>metadatascience.com</em> at <a href="http://godaddy.com">GoDaddy.com</a> but you can use any domain name registrar.</p></li>
+<li><h4>Configure the DNS</h4>
+
+<p>  Go to DNS Manager on the control panel of your domain. Point your host to <em>204.232.175.78</em>.</p></li>
+<li><h4>Map your domain to your GitHub pages</h4>
+
+<p>  I used the commands below to map my domain <em>metadatascience.com</em> to my GitHub pages at <em>accesstoken.github.com</em>.
+  Replace <em>metadatascience.com</em> with your domain name and <em>accesstoken</em> with your username on GitHub in the code below.</p></li>
+</ul>
+
+
+<p>``` bash
+echo &lsquo;metadatascience.com&rsquo; >> source/CNAME
+git add source/CNAME
+git commit -m &ldquo;map accesstoken.github.com to metadatascience.com&rdquo;
+git push origin source</p>
+
+<h1>push changes to master</h1>
+
+<p>rake generate
+rake deploy
+```</p>
+
+<p>Any time you make a DNS (domain name server) change it might take around 24-48 hours to complete, so be patient!</p>
+]]></content>
+  </entry>
+  
+</feed>

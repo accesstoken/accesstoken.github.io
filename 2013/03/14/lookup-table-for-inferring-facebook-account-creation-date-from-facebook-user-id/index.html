@@ -1,0 +1,422 @@
+<!-- This goes in the document HEAD so IE7 and IE8 don't cry -->
+<!--[if lt IE 9]>
+<style type="text/css">
+  table.gradienttable th {
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d5e3e4', endColorstr='#b3c8cc',GradientType=0 );
+    position: relative;
+    z-index: -1;
+  }
+  table.gradienttable td {
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ebecda', endColorstr='#ceceb7',GradientType=0 );
+    position: relative;
+    z-index: -1;
+  }
+</style>
+<![endif]-->
+
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7" prefix="og: http://ogp.me/ns#"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8" prefix="og: http://ogp.me/ns#"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en" prefix="og: http://ogp.me/ns#"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID - Meta Data Science</title>
+  <meta name="author" content="Massoud Seifi">
+
+  
+  <meta name="description" content="Inferring Facebook account creation date from Facebook User ID.">
+  <meta name="keywords" content="Lookup table, data set, Facebook, account creation date, account age, graph API, FQL, Facebook post, read_stream permission, Facebook stream, Facebook created_time, Facebook access token, Facebook join date, Facebook User ID, Facebook uid, correlation">
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Meta Data Science" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Oswald:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Avenir:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
+<meta property="og:image" content="/images/metadatascience.gif" />
+<link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-38669216-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  <!-- Start of StatCounter Code for Default Guide -->
+<script type="text/javascript">
+	var sc_project=8892392; 
+	var sc_invisible=1; 
+	var sc_security="3020fdf3"; 
+	var scJsHost = (("https:" == document.location.protocol) ? "https://secure." : "http://www.");
+	document.write("<sc"+"ript type='text/javascript' src='" + scJsHost+ "statcounter.com/counter/counter.js'></"+"script>");
+</script>
+<noscript>
+	<div class="statcounter">
+		<a title="web analytics" href="http://statcounter.com/" target="_blank">
+			<img class="statcounter" src="http://c.statcounter.com/8892392/0/3020fdf3/1/" alt="web analytics">
+		</a>
+	</div>
+</noscript>
+<!-- End of StatCounter Code for Default Guide -->
+</head>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/"><img src='/images/logo.png' alt='logo' height="71" width="85"/>   Meta Data Science</a></h1>
+  
+    <h2><span style="font-family:Oswald;">By Massoud Seifi, Ph.D. Data Scientist</span></h2>
+  
+
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:metadatascience.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/archives">Archives</a></li>
+  <li><a href="/publications">Publications</a></li>
+  <li><a href="/about">About</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-14T12:49:00-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>In my <a href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">previous post</a>, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call the Facebook API and just based on the user’s Facebook UID.</p>
+
+<p>Table below shows the correlation between Facebook UID and Facebook Account Creation Date for the sample set that I analysed.
+The table is represented in <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format as follows:</p>
+
+<p><em>Facebook UID, Account Creation Date(timestamp), Account Creation Date(date)</em>.</p>
+
+<p><strong>Note #1:</strong> To respect the users privacy I hided the last 5 digits of UIDs. You may replace &lsquo;x&rsquo; by &lsquo;0&rsquo; and it should not cause any problem.</p>
+
+<p><strong>Note #2:</strong> For a more accurate result, this table should get updated.</p>
+
+<figure class='code'><figcaption><span>Correlation between Facebook UID and Facebook Account Creation Date  (fbid_accountage.csv)</span> <a href='/downloads/code/fbid_accountage.csv'>download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='text'><span class='line'>1000053132xxxxx,1361330314,2013-02-19
+</span><span class='line'>1000049732xxxxx,1357606484,2013-01-07
+</span><span class='line'>1000047422xxxxx,1354021840,2012-11-27
+</span><span class='line'>1000047355xxxxx,1353417806,2012-11-20
+</span><span class='line'>1000046843xxxxx,1352662415,2012-11-11
+</span><span class='line'>1000046015xxxxx,1350999158,2012-10-23
+</span><span class='line'>1000035523xxxxx,1349467776,2012-10-05
+</span><span class='line'>1000040785xxxxx,1343717040,2012-07-30
+</span><span class='line'>1000041143xxxxx,1342928040,2012-07-21
+</span><span class='line'>1000038945xxxxx,1338526722,2012-05-31
+</span><span class='line'>1000036032xxxxx,1331873652,2012-03-15
+</span><span class='line'>1000031133xxxxx,1320583505,2011-11-06
+</span><span class='line'>1000031024xxxxx,1320464096,2011-11-04
+</span><span class='line'>1000029834xxxxx,1318571069,2011-10-13
+</span><span class='line'>1000029345xxxxx,1315974235,2011-09-13
+</span><span class='line'>1000026042xxxxx,1309652553,2011-07-02
+</span><span class='line'>1000023280xxxxx,1306728328,2011-05-29
+</span><span class='line'>1000024582xxxxx,1304995827,2011-05-09
+</span><span class='line'>1000023732xxxxx,1303537065,2011-04-22
+</span><span class='line'>1000022413xxxxx,1302326877,2011-04-08
+</span><span class='line'>1000022328xxxxx,1300810582,2011-03-22
+</span><span class='line'>1000019352xxxxx,1295628516,2011-01-21
+</span><span class='line'>1000014241xxxxx,1285972221,2010-10-01
+</span><span class='line'>1000013861xxxxx,1281882953,2010-08-15
+</span><span class='line'>1000014436xxxxx,1280116994,2010-07-25
+</span><span class='line'>1000012117xxxxx,1276055448,2010-06-08
+</span><span class='line'>1000010697xxxxx,1274090432,2010-05-17
+</span><span class='line'>1000010425xxxxx,1272438522,2010-04-28
+</span><span class='line'>1000008600xxxxx,1268201411,2010-03-09
+</span><span class='line'>1000008113xxxxx,1267667333,2010-03-03
+</span><span class='line'>1000006286xxxxx,1266618961,2010-02-19
+</span><span class='line'>1000006189xxxxx,1263726284,2010-01-17
+</span><span class='line'>1000006449xxxxx,1262406605,2010-01-01
+</span><span class='line'>1000003298xxxxx,1261112448,2009-12-17
+</span><span class='line'>1000005651xxxxx,1259793952,2009-12-02
+</span><span class='line'>1000005426xxxxx,1259605238,2009-11-30
+</span><span class='line'>1000005072xxxxx,1258400669,2009-11-16
+</span><span class='line'>1000004668xxxxx,1257502719,2009-11-06
+</span><span class='line'>1000002286xxxxx,1252567838,2009-09-10
+</span><span class='line'>1000001160xxxxx,1250562107,2009-08-17
+</span><span class='line'>1000001568xxxxx,1250382196,2009-08-15
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Massoud Seifi</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-03-14T12:49:00-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/facebook/'>Facebook</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/" data-via="accesstoken" data-counturl="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/" >Tweet</a>
+  
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/" title="Previous Post: Inferring Facebook account creation date from Facebook User ID">&laquo; Inferring Facebook account creation date from Facebook User ID</a>
+      
+      
+        <a class="basic-alignment right" href="/2013/07/03/plotting-the-frequency-distribution-using-r/" title="Next Post: Plotting the frequency distribution using R">Plotting the frequency distribution using R &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+  <p>
+  	I am a Data Scientist with a formal background in Computer Science and Mathematics (especially Graph Theory).
+  	I have a high curiosity to make discoveries in the world of big data and a passion to find innovative solutions for complex challenges.</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2014/02/27/random-sampling-from-very-large-files/">Random sampling from very large files</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/08/13/how-to-get-twitter-username-from-twitter-id/">How to get Twitter username from Twitter ID</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/07/03/plotting-the-frequency-distribution-using-r/">Plotting the frequency distribution using R</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">Inferring Facebook account creation date from Facebook User ID</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>Latest Tweets</h1>
+  <a class="twitter-timeline" href="https://twitter.com/AccessToken" data-widget-id="352835310855528450">Tweets by @AccessToken</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Massoud Seifi -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'metadatascience';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/';
+        var disqus_url = 'http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
