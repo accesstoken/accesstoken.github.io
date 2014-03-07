@@ -49,7 +49,21 @@
 <meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
 <meta property="og:image" content="/images/metadatascience.gif" />
 <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
-
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -82,21 +96,6 @@
 <!-- End of StatCounter Code for Default Guide -->
 </head>
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
 <body   >
   <header role="banner"><hgroup>
@@ -158,102 +157,101 @@ MathJax.Hub.Config({
   </header>
 
 
-<div class="entry-content"><p>In my <a href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">previous post</a>, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call the Facebook API and just based on the user’s Facebook UID.</p>
+<div class="entry-content"><p>In my <a href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">previous post</a>, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call the Facebook API and just based on the user’s Facebook UID. </p>
 
 <p>Table below shows the correlation between Facebook UID and Facebook Account Creation Date for the sample set that I analysed.
 The table is represented in <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format as follows:</p>
 
 <p><em>Facebook UID, Account Creation Date(timestamp), Account Creation Date(date)</em>.</p>
 
-<p><strong>Note #1:</strong> To respect the users privacy I hided the last 5 digits of UIDs. You may replace &lsquo;x&rsquo; by &lsquo;0&rsquo; and it should not cause any problem.</p>
+<p><strong>Note #1:</strong> To respect the users privacy I hided the last 5 digits of UIDs. You may replace ‘x’ by ‘0’ and it should not cause any problem.</p>
 
 <p><strong>Note #2:</strong> For a more accurate result, this table should get updated.</p>
 
-<figure class='code'><figcaption><span>Correlation between Facebook UID and Facebook Account Creation Date  (fbid_accountage.csv)</span> <a href='/downloads/code/fbid_accountage.csv'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>1000053132xxxxx,1361330314,2013-02-19
-</span><span class='line'>1000049732xxxxx,1357606484,2013-01-07
-</span><span class='line'>1000047422xxxxx,1354021840,2012-11-27
-</span><span class='line'>1000047355xxxxx,1353417806,2012-11-20
-</span><span class='line'>1000046843xxxxx,1352662415,2012-11-11
-</span><span class='line'>1000046015xxxxx,1350999158,2012-10-23
-</span><span class='line'>1000035523xxxxx,1349467776,2012-10-05
-</span><span class='line'>1000040785xxxxx,1343717040,2012-07-30
-</span><span class='line'>1000041143xxxxx,1342928040,2012-07-21
-</span><span class='line'>1000038945xxxxx,1338526722,2012-05-31
-</span><span class='line'>1000036032xxxxx,1331873652,2012-03-15
-</span><span class='line'>1000031133xxxxx,1320583505,2011-11-06
-</span><span class='line'>1000031024xxxxx,1320464096,2011-11-04
-</span><span class='line'>1000029834xxxxx,1318571069,2011-10-13
-</span><span class='line'>1000029345xxxxx,1315974235,2011-09-13
-</span><span class='line'>1000026042xxxxx,1309652553,2011-07-02
-</span><span class='line'>1000023280xxxxx,1306728328,2011-05-29
-</span><span class='line'>1000024582xxxxx,1304995827,2011-05-09
-</span><span class='line'>1000023732xxxxx,1303537065,2011-04-22
-</span><span class='line'>1000022413xxxxx,1302326877,2011-04-08
-</span><span class='line'>1000022328xxxxx,1300810582,2011-03-22
-</span><span class='line'>1000019352xxxxx,1295628516,2011-01-21
-</span><span class='line'>1000014241xxxxx,1285972221,2010-10-01
-</span><span class='line'>1000013861xxxxx,1281882953,2010-08-15
-</span><span class='line'>1000014436xxxxx,1280116994,2010-07-25
-</span><span class='line'>1000012117xxxxx,1276055448,2010-06-08
-</span><span class='line'>1000010697xxxxx,1274090432,2010-05-17
-</span><span class='line'>1000010425xxxxx,1272438522,2010-04-28
-</span><span class='line'>1000008600xxxxx,1268201411,2010-03-09
-</span><span class='line'>1000008113xxxxx,1267667333,2010-03-03
-</span><span class='line'>1000006286xxxxx,1266618961,2010-02-19
-</span><span class='line'>1000006189xxxxx,1263726284,2010-01-17
-</span><span class='line'>1000006449xxxxx,1262406605,2010-01-01
-</span><span class='line'>1000003298xxxxx,1261112448,2009-12-17
-</span><span class='line'>1000005651xxxxx,1259793952,2009-12-02
-</span><span class='line'>1000005426xxxxx,1259605238,2009-11-30
-</span><span class='line'>1000005072xxxxx,1258400669,2009-11-16
-</span><span class='line'>1000004668xxxxx,1257502719,2009-11-06
-</span><span class='line'>1000002286xxxxx,1252567838,2009-09-10
-</span><span class='line'>1000001160xxxxx,1250562107,2009-08-17
-</span><span class='line'>1000001568xxxxx,1250382196,2009-08-15
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Correlation between Facebook UID and Facebook Account Creation Date  (fbid_accountage.csv)</span> <a href="/downloads/code/fbid_accountage.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">1000053132xxxxx,1361330314,2013-02-19
+</span><span class="line">1000049732xxxxx,1357606484,2013-01-07
+</span><span class="line">1000047422xxxxx,1354021840,2012-11-27
+</span><span class="line">1000047355xxxxx,1353417806,2012-11-20
+</span><span class="line">1000046843xxxxx,1352662415,2012-11-11
+</span><span class="line">1000046015xxxxx,1350999158,2012-10-23
+</span><span class="line">1000035523xxxxx,1349467776,2012-10-05
+</span><span class="line">1000040785xxxxx,1343717040,2012-07-30
+</span><span class="line">1000041143xxxxx,1342928040,2012-07-21
+</span><span class="line">1000038945xxxxx,1338526722,2012-05-31
+</span><span class="line">1000036032xxxxx,1331873652,2012-03-15
+</span><span class="line">1000031133xxxxx,1320583505,2011-11-06
+</span><span class="line">1000031024xxxxx,1320464096,2011-11-04
+</span><span class="line">1000029834xxxxx,1318571069,2011-10-13
+</span><span class="line">1000029345xxxxx,1315974235,2011-09-13
+</span><span class="line">1000026042xxxxx,1309652553,2011-07-02
+</span><span class="line">1000023280xxxxx,1306728328,2011-05-29
+</span><span class="line">1000024582xxxxx,1304995827,2011-05-09
+</span><span class="line">1000023732xxxxx,1303537065,2011-04-22
+</span><span class="line">1000022413xxxxx,1302326877,2011-04-08
+</span><span class="line">1000022328xxxxx,1300810582,2011-03-22
+</span><span class="line">1000019352xxxxx,1295628516,2011-01-21
+</span><span class="line">1000014241xxxxx,1285972221,2010-10-01
+</span><span class="line">1000013861xxxxx,1281882953,2010-08-15
+</span><span class="line">1000014436xxxxx,1280116994,2010-07-25
+</span><span class="line">1000012117xxxxx,1276055448,2010-06-08
+</span><span class="line">1000010697xxxxx,1274090432,2010-05-17
+</span><span class="line">1000010425xxxxx,1272438522,2010-04-28
+</span><span class="line">1000008600xxxxx,1268201411,2010-03-09
+</span><span class="line">1000008113xxxxx,1267667333,2010-03-03
+</span><span class="line">1000006286xxxxx,1266618961,2010-02-19
+</span><span class="line">1000006189xxxxx,1263726284,2010-01-17
+</span><span class="line">1000006449xxxxx,1262406605,2010-01-01
+</span><span class="line">1000003298xxxxx,1261112448,2009-12-17
+</span><span class="line">1000005651xxxxx,1259793952,2009-12-02
+</span><span class="line">1000005426xxxxx,1259605238,2009-11-30
+</span><span class="line">1000005072xxxxx,1258400669,2009-11-16
+</span><span class="line">1000004668xxxxx,1257502719,2009-11-06
+</span><span class="line">1000002286xxxxx,1252567838,2009-09-10
+</span><span class="line">1000001160xxxxx,1250562107,2009-08-17
+</span><span class="line">1000001568xxxxx,1250382196,2009-08-15
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 </div>
 
 

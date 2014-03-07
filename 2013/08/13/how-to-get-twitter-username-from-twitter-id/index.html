@@ -49,7 +49,21 @@
 <meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
 <meta property="og:image" content="/images/metadatascience.gif" />
 <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
-
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -82,21 +96,6 @@
 <!-- End of StatCounter Code for Default Guide -->
 </head>
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
 <body   >
   <header role="banner"><hgroup>
@@ -158,245 +157,242 @@ MathJax.Hub.Config({
   </header>
 
 
-<div class="entry-content"><h3>Twitter ID and Username</h3>
+<div class="entry-content"><h3 id="twitter-id-and-username">Twitter ID and Username</h3>
 
-<p>The Twitter ID is a unique number identifying an account on Twitter.
+<p>The Twitter ID is a unique number identifying an account on Twitter. 
 Upon registration, users can also choose a username (a.k.a. screen name or @handle).
 However an account can never change its Twitter ID, but it can change its username.</p>
 
-<h3>Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
+<h3 id="getting-twitter-username-from-twitter-id-using-the-twitter-api-rate-limited">Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
 
-<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using
+<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using 
 <code>http://twitter.com/users/show/[ID]?format=json</code> as the endpoint:</p>
 
-<figure class='code'><figcaption><span>Getting Twitter username from Twitter ID using the Twitter API (limited)  (TwitterUserIdToScreenName_limited.php)</span> <a href='/downloads/code/TwitterUserIdToScreenName_limited.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
-</span><span class='line'><span class="sd"> * This approach does not work in large scale. It&#39;s limited to 150 requests per hour.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/users/show/&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span> <span class="o">.</span> <span class="s1">&#39;?format=json&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
-</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Getting Twitter username from Twitter ID using the Twitter API (limited)  (TwitterUserIdToScreenName_limited.php)</span> <a href="/downloads/code/TwitterUserIdToScreenName_limited.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
+</span><span class="line"><span class="sd"> * This approach does not work in large scale. It&#39;s limited to 150 requests per hour.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/users/show/&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">){</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
+</span><span class="line">		    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span> <span class="o">.</span> <span class="s1">&#39;?format=json&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])){</span>
+</span><span class="line">			<span class="k">return</span> <span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
+</span><span class="line">	<span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
+</span><span class="line">	<span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class="line">	<span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This code calls Twitter API which has two issues:</p>
 
 <ol>
-<li><p>It needs an access token after the release of Twitter API version 1.1.</p></li>
-<li><p>The number of requests is limited to 150 requests per hour.</p></li>
+  <li>
+    <p>It needs an access token after the release of Twitter API version 1.1.</p>
+  </li>
+  <li>
+    <p>The number of requests is limited to 150 requests per hour.</p>
+  </li>
 </ol>
 
+<h3 id="getting-twitter-username-from-twitter-id-without-using-the-twitter-api-scalable">Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
 
-<h3>Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
+<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn’t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
 
-<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn&rsquo;t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
-
-<figure class='code'><figcaption><span>Getting Twitter username from Twitter ID without using the Twitter API  (TwitterUserIdToScreenName.php)</span> <a href='/downloads/code/TwitterUserIdToScreenName.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
-</span><span class='line'><span class="sd"> * This code works fine in large scale.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/account/redirect_by_id?id=&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_NOBODY</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nv">$info</span> <span class="o">=</span>  <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])){</span>
-</span><span class='line'>          <span class="k">return</span>  <span class="nb">str_replace</span><span class="p">(</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span> <span class="nx">PHP_URL_PATH</span><span class="p">));</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
-</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Getting Twitter username from Twitter ID without using the Twitter API  (TwitterUserIdToScreenName.php)</span> <a href="/downloads/code/TwitterUserIdToScreenName.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
+</span><span class="line"><span class="sd"> * This code works fine in large scale.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/account/redirect_by_id?id=&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
+</span><span class="line">		    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_NOBODY</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nv">$info</span> <span class="o">=</span>  <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])){</span>
+</span><span class="line">			<span class="k">return</span>  <span class="nb">str_replace</span><span class="p">(</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span> <span class="nx">PHP_URL_PATH</span><span class="p">));</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
+</span><span class="line">	<span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
+</span><span class="line">	<span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class="line">	<span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Usage Example:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; echo 1180576736 | php TwitterUserIdToScreenName.php
-</span><span class='line'>1180576736,AccessToken</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">&gt; echo 1180576736 | php TwitterUserIdToScreenName.php
+</span><span class="line">1180576736,AccessToken</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>or you can lookup a list of IDs:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; cat list_IDs | php TwitterUserIdToScreenName.php</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">&gt; cat list_IDs | php TwitterUserIdToScreenName.php</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 </div>
 

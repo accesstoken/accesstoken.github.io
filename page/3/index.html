@@ -25,8 +25,7 @@
   <meta name="author" content="Massoud Seifi">
 
   
-  <meta name="description" content="Octopress is a “blogging framework for hackers” according to its author, &ldquo;Brandon Mathis&rdquo;.
-It is built in Ruby and based on the static &hellip;">
+  <meta name="description" content="Octopress is a “blogging framework for hackers” according to its author, “Brandon Mathis”. It is built in Ruby and based on the static web-site &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -50,7 +49,21 @@ It is built in Ruby and based on the static &hellip;">
 <meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
 <meta property="og:image" content="/images/metadatascience.gif" />
 <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
-
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -83,21 +96,6 @@ It is built in Ruby and based on the static &hellip;">
 <!-- End of StatCounter Code for Default Guide -->
 </head>
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
 <body   >
   <header role="banner"><hgroup>
@@ -162,49 +160,51 @@ MathJax.Hub.Config({
   </header>
 
 
-  <div class="entry-content"><p><img class="right" src="/images/octopress.png" width="227" height="227" title="Octopress" >
-<a href="http://octopress.org/">Octopress</a> is a “blogging framework for hackers” according to its author, &ldquo;Brandon Mathis&rdquo;.
-It is built in Ruby and based on the static web-site generator
-<a href="http://jekyllrb.com/">Jekyll</a> which powers <a href="http://pages.github.com/">GitHub Pages</a>.
-I tried setting up Octopress (on GitHub) by following various tutorials I found online.
+  <div class="entry-content"><p><img class="right" src="/images/octopress.png" width="227" height="227" title="Octopress" />
+<a href="http://octopress.org/">Octopress</a> is a “blogging framework for hackers” according to its author, “Brandon Mathis”. 
+It is built in Ruby and based on the static web-site generator 
+<a href="http://jekyllrb.com/">Jekyll</a> which powers <a href="http://pages.github.com/">GitHub Pages</a>. 
+I tried setting up Octopress (on GitHub) by following various tutorials I found online. 
 Not all of them worked properly.
-So, now that I got it working, this tutorial details what worked for me;
+So, now that I got it working, this tutorial details what worked for me; 
 and how I was able to get Octopress working on GitHub.</p>
 
-<h3>Install Octopress</h3>
+<h3 id="install-octopress">Install Octopress</h3>
 
 <p>Here you can find instructions on how to install Octopress on Ubuntu (I currently use version 12.10):</p>
 
 <ul>
-<li><h4>Install <a href="http://git-scm.com/">Git</a> using the guide <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</h4></li>
-<li><h4>Install Ruby 1.9.3 using the commands below.</h4></li>
+  <li>
+    <h4 id="install-githttpgit-scmcom-using-the-guide-herehttpgit-scmcombookengetting-started-installing-git">Install <a href="http://git-scm.com/">Git</a> using the guide <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</h4>
+  </li>
+  <li>
+    <h4 id="install-ruby-193-using-the-commands-below">Install Ruby 1.9.3 using the commands below.</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span>
-</span><span class='line'>git clone git://github.com/sstephenson/rbenv.git .rbenv
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bashrc
-</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; ~/.bashrc
-</span><span class='line'><span class="nb">source</span> ~/.bashrc
-</span><span class='line'>git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-</span><span class='line'>
-</span><span class='line'>rbenv install 1.9.3-p194
-</span><span class='line'>rbenv rehash
-</span><span class='line'>rbenv global 1.9.3-p194
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">cd</span>
+</span><span class="line">git clone git://github.com/sstephenson/rbenv.git .rbenv
+</span><span class="line">
+</span><span class="line"><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bashrc
+</span><span class="line"><span class="nb">echo</span> <span class="s1">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; ~/.bashrc
+</span><span class="line"><span class="nb">source</span> ~/.bashrc
+</span><span class="line">git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</span><span class="line">
+</span><span class="line">rbenv install 1.9.3-p194
+</span><span class="line">rbenv rehash
+</span><span class="line">rbenv global 1.9.3-p194
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Run <code>ruby --version</code> to be sure is Ruby 1.9.3 installed properly.</p>
 
@@ -213,266 +213,257 @@ and how I was able to get Octopress working on GitHub.</p>
 I changed <em>.bash_profile</em> to <em>.bashrc</em> and <em>1.9.3-p0</em> to <em>1.9.3-p194</em> to make it work.</p>
 
 <ul>
-<li><h4>Setup Octopress</h4></li>
+  <li>
+    <h4 id="setup-octopress">Setup Octopress</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Get Octopress</span>
-</span><span class='line'>git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'>
-</span><span class='line'><span class="c"># Install dependencies.</span>
-</span><span class='line'><span class="nb">cd </span>octopress
-</span><span class='line'>gem install bundler
-</span><span class='line'>rbenv rehash
-</span><span class='line'>bundle install
-</span><span class='line'>
-</span><span class='line'><span class="c"># Install the default Octopress theme.</span>
-</span><span class='line'>rake install
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c"># Get Octopress</span>
+</span><span class="line">git clone git://github.com/imathis/octopress.git octopress
+</span><span class="line">
+</span><span class="line"><span class="c"># Install dependencies.</span>
+</span><span class="line"><span class="nb">cd </span>octopress
+</span><span class="line">gem install bundler
+</span><span class="line">rbenv rehash
+</span><span class="line">bundle install
+</span><span class="line">
+</span><span class="line"><span class="c"># Install the default Octopress theme.</span>
+</span><span class="line">rake install
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Deploying to GitHub Pages</h3>
+<h3 id="deploying-to-github-pages">Deploying to GitHub Pages</h3>
 
 <ul>
-<li><h4>Create a GitHub Account</h4>
-
-<p>It has a very easy <a href="https://github.com/signup/">signup</a> process. Be creative to choose a cool username (My username is accesstoken. Is it cool?!). It would be good for your reputation if you can use the same username everywhere, e.g. on Twitter (You can follow me on Twitter with the same username: <a href="http://twitter.com/accesstoken">http://twitter.com/accesstoken</a>).</p></li>
-<li><h4>Create a GitHub repository for the blog</h4>
-
-<p>Create a new GitHub repository and name the repository with your user name: <em>[your-username].github.com</em></p></li>
-<li><h4>Generate a SSH key</h4>
-
-<p>Create a SSH key and add it to your GitHub account using the instructions <a href="https://help.github.com/articles/generating-ssh-keys">here</a>.</p></li>
-<li><h4>Deploy</h4>
-
-<p>Now, run the following command:</p></li>
+  <li>
+    <h4 id="create-a-github-account">Create a GitHub Account</h4>
+    <p>It has a very easy <a href="https://github.com/signup/">signup</a> process. Be creative to choose a cool username (My username is accesstoken. Is it cool?!). It would be good for your reputation if you can use the same username everywhere, e.g. on Twitter (You can follow me on Twitter with the same username: <a href="http://twitter.com/accesstoken">http://twitter.com/accesstoken</a>).</p>
+  </li>
+  <li>
+    <h4 id="create-a-github-repository-for-the-blog">Create a GitHub repository for the blog</h4>
+    <p>Create a new GitHub repository and name the repository with your user name: <em>[your-username].github.com</em></p>
+  </li>
+  <li>
+    <h4 id="generate-a-ssh-key">Generate a SSH key</h4>
+    <p>Create a SSH key and add it to your GitHub account using the instructions <a href="https://help.github.com/articles/generating-ssh-keys">here</a>.</p>
+  </li>
+  <li>
+    <h4 id="deploy">Deploy</h4>
+    <p>Now, run the following command:</p>
+  </li>
 </ul>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake setup_github_pages
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake setup_github_pages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will ask you to enter the read/write url for your repository.
+<p>It will ask you to enter the read/write url for your repository. 
 Enter the SSH read/write url for your repository which should be like <em>git@github.com:username/username.github.com.git</em>.</p>
 
 <p>Continue by running the following commands:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake generate
-</span><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake generate
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Commit everything in Git:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git add .
-</span><span class='line'>git commit -m <span class="s1">&#39;initial commit&#39;</span>
-</span><span class='line'>git push origin <span class="nb">source</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">git add .
+</span><span class="line">git commit -m <span class="s1">&#39;initial commit&#39;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Now, you should have two branches, <em>source</em> and <em>master</em> on your GitHub repository. 
+The <em>source</em> branch contains the files that are used to generate the blog and the <em>master</em> contains the blog itself. </p>
 
-<p>Now, you should have two branches, <em>source</em> and <em>master</em> on your GitHub repository.
-The <em>source</em> branch contains the files that are used to generate the blog and the <em>master</em> contains the blog itself.</p>
-
-<p>After a few minutes, you should be able to see the default Octopress page here: <em><a href="http://">http://</a>[your-username].github.com/</em>. Hooray!</p>
+<p>After a few minutes, you should be able to see the default Octopress page here: <em>http://[your-username].github.com/</em>. Hooray!</p>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Start blogging</h3>
+<h3 id="start-blogging">Start blogging</h3>
 
 <ul>
-<li><h4>Configure your blog</h4></li>
+  <li>
+    <h4 id="configure-your-blog">Configure your blog</h4>
+  </li>
 </ul>
-
 
 <p>You can find a simple guide <a href="http://octopress.org/docs/configuring/">here</a> for configuring your Octopress blog.</p>
 
 <ul>
-<li><h4>Create a new post</h4></li>
+  <li>
+    <h4 id="create-a-new-post">Create a new post</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake <span class="s1">&#39;new_post[Title]&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake <span class="s1">&#39;new_post[Title]&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This will tell you the name of the <em>Markdown</em> file for your new posting. Just open the file and start typing.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>---
-</span><span class='line'>layout: post
-</span><span class='line'>title: &quot;Blogging With Octopress&quot;
-</span><span class='line'>date: 2013-02-18 13:18
-</span><span class='line'>comments: true
-</span><span class='line'>categories: Tutorials
-</span><span class='line'>description: &quot;A tutorial for how to use Octopress for blogging.&quot;
-</span><span class='line'>keywords: &quot;octopress, tutorial for octopress, blogging with octopress&quot;
-</span><span class='line'>---
-</span><span class='line'><span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>This is a link to <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;http://octopress.org/&#39;</span><span class="nt">&gt;</span>Octopress<span class="nt">&lt;/a&gt;</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line">---
+</span><span class="line">layout: post
+</span><span class="line">title: &quot;Blogging With Octopress&quot;
+</span><span class="line">date: 2013-02-18 13:18
+</span><span class="line">comments: true
+</span><span class="line">categories: Tutorials
+</span><span class="line">description: &quot;A tutorial for how to use Octopress for blogging.&quot;
+</span><span class="line">keywords: &quot;octopress, tutorial for octopress, blogging with octopress&quot;
+</span><span class="line">---
+</span><span class="line"><span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
+</span><span class="line">This is a link to <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;http://octopress.org/&#39;</span><span class="nt">&gt;</span>Octopress<span class="nt">&lt;/a&gt;</span>.
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>You can use <a href="http://daringfireball.net/projects/markdown/basics">Markdown syntax</a>.
 Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'># Hello World!
-</span><span class='line'>This is a link to [Octopress](http://octopress.org/).
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"># Hello World!
+</span><span class="line">This is a link to [Octopress](http://octopress.org/).
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>You can also <a href="http://www.idryman.org/blog/2012/03/10/writing-math-equations-on-octopress">write math equations</a>
-(e.g.
-$$J<em>\alpha(x) = \sum\limits</em>{m=0}^\infty \frac{(-1)<sup>m</sup>}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}$$
-)
-using <a href="http://kramdown.rubyforge.org/">kramdown</a> and <a href="http://www.mathjax.org/">MathJax</a>.</p>
+<p>You can also <a href="http://www.idryman.org/blog/2012/03/10/writing-math-equations-on-octopress">write math equations</a> 
+(e.g. 
+<script type="math/tex">J_\alpha(x) = \sum\limits_{m=0}^\infty \frac{(-1)^m}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}</script>
+) 
+using <a href="http://kramdown.rubyforge.org/">kramdown</a> and <a href="http://www.mathjax.org/">MathJax</a> (Update: see <a href="http://www.lucypark.kr/blog/2013/02/25/mathjax-kramdown-and-octopress/">here</a>).</p>
 
 <p>Now, run the command below to generate posts and pages into the public directory.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake generate
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake generate
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>If you want to see a preview of your blog before publishing it to the server, run the command below.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake preview
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake preview
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>You will see a message like this:</p>
 
 <p><em>&gt;&gt;&gt; Compass is polling for changes. Press Ctrl-C to Stop.</em></p>
 
-<p>Keep it listening (don&rsquo;t press Ctrl-C), open your browser and open *<a href="http://localhost:4000*">http://localhost:4000*</a> to preview your post.</p>
+<p>Keep it listening (don’t press Ctrl-C), open your browser and open <em>http://localhost:4000</em> to preview your post.</p>
 
 <p>When you are happy with your new post, you can publish it to the server.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <ul>
-<li><h4>Create a new Page</h4>
-
-<p>If you want to create, for example, the “about” page for your blog, you need to run the command below.</p></li>
+  <li>
+    <h4 id="create-a-new-page">Create a new Page</h4>
+    <p>If you want to create, for example, the “about” page for your blog, you need to run the command below.</p>
+  </li>
 </ul>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake new_page<span class="o">[</span><span class="s2">&quot;about&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake new_page<span class="o">[</span><span class="s2">&quot;about&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will create a new file at <em>source/about/index.markdown</em> that you can edit to write about yourself.
+<p>This will create a new file at <em>source/about/index.markdown</em> that you can edit to write about yourself. 
 Running <code>rake generate</code> command will generate <em>public/about/index.html</em> from the <em>index.markdown</em>
-and <code>rake deploy</code> will push changes to the server.</p>
+and <code>rake deploy</code> will push changes to the server. </p>
 
-<p>You can add an “About” link in the navigation bar for this page.
+<p>You can add an “About” link in the navigation bar for this page. 
 Simply, edit the file <em>source/_includes/custom/navigation.html</em> and add</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/about&quot;</span><span class="nt">&gt;</span>About<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/about&quot;</span><span class="nt">&gt;</span>About<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Generate and deploy can be done in a single command:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake gen_deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake gen_deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <ul>
-<li><h4>Enable comments</h4></li>
+  <li>
+    <h4 id="enable-comments">Enable comments</h4>
+  </li>
 </ul>
 
-
-<p>Create a <a href="http://disqus.com/">disqus</a> account and add your disqus short name in <em>_config.yml</em> to enable comments on your blog.</p>
+<p>Create a <a href="http://disqus.com/">disqus</a> account and add your disqus short name in <em>_config.yml</em> to enable comments on your blog. </p>
 
 <p>Done!</p>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Mapping your custom domain to your GitHub pages</h3>
+<h3 id="mapping-your-custom-domain-to-your-github-pages">Mapping your custom domain to your GitHub pages</h3>
 
 <p>Here you can find instructions on how to map your custom domain to your blog:</p>
 
 <ul>
-<li><h4>Register your domain</h4>
+  <li>
+    <h4 id="register-your-domain">Register your domain</h4>
 
-<p>  I registered my domain <em>metadatascience.com</em> at <a href="http://godaddy.com">GoDaddy.com</a> but you can use any domain name registrar.</p></li>
-<li><h4>Configure the DNS</h4>
+    <p>I registered my domain <em>metadatascience.com</em> at <a href="http://godaddy.com">GoDaddy.com</a> but you can use any domain name registrar.</p>
+  </li>
+  <li>
+    <h4 id="configure-the-dns">Configure the DNS</h4>
 
-<p>  Go to DNS Manager on the control panel of your domain. Point your host to <em>204.232.175.78</em>.</p></li>
-<li><h4>Map your domain to your GitHub pages</h4>
+    <p>Go to DNS Manager on the control panel of your domain. Point your host to <em>204.232.175.78</em>.</p>
+  </li>
+  <li>
+    <h4 id="map-your-domain-to-your-github-pages">Map your domain to your GitHub pages</h4>
 
-<p>  I used the commands below to map my domain <em>metadatascience.com</em> to my GitHub pages at <em>accesstoken.github.com</em>.
-  Replace <em>metadatascience.com</em> with your domain name and <em>accesstoken</em> with your username on GitHub in the code below.</p></li>
+    <p>I used the commands below to map my domain <em>metadatascience.com</em> to my GitHub pages at <em>accesstoken.github.com</em>.
+  Replace <em>metadatascience.com</em> with your domain name and <em>accesstoken</em> with your username on GitHub in the code below.</p>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;metadatascience.com&#39;</span> &gt;&gt; <span class="nb">source</span>/CNAME
-</span><span class='line'>git add <span class="nb">source</span>/CNAME
-</span><span class='line'>git commit -m <span class="s2">&quot;map accesstoken.github.com to metadatascience.com&quot;</span>
-</span><span class='line'>git push origin <span class="nb">source</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># push changes to master </span>
-</span><span class='line'>rake generate
-</span><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">echo</span> <span class="s1">&#39;metadatascience.com&#39;</span> &gt;&gt; <span class="nb">source</span>/CNAME
+</span><span class="line">git add <span class="nb">source</span>/CNAME
+</span><span class="line">git commit -m <span class="s2">&quot;map accesstoken.github.com to metadatascience.com&quot;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># push changes to master </span>
+</span><span class="line">rake generate
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Any time you make a DNS (domain name server) change it might take around 24-48 hours to complete, so be patient!</p>
 </div>

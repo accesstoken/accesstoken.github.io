@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Twitter | Meta Data Science]]></title>
   <link href="http://metadatascience.com/categories/twitter/atom.xml" rel="self"/>
   <link href="http://metadatascience.com/"/>
-  <updated>2014-03-06T16:48:55-08:00</updated>
+  <updated>2014-03-07T10:44:56-08:00</updated>
   <id>http://metadatascience.com/</id>
   <author>
     <name><![CDATA[Massoud Seifi]]></name>
@@ -18,15 +18,15 @@
     <link href="http://metadatascience.com/2013/08/13/how-to-get-twitter-username-from-twitter-id/"/>
     <updated>2013-08-13T11:18:00-07:00</updated>
     <id>http://metadatascience.com/2013/08/13/how-to-get-twitter-username-from-twitter-id</id>
-    <content type="html"><![CDATA[<h3>Twitter ID and Username</h3>
+    <content type="html"><![CDATA[<h3 id="twitter-id-and-username">Twitter ID and Username</h3>
 
-<p>The Twitter ID is a unique number identifying an account on Twitter.
+<p>The Twitter ID is a unique number identifying an account on Twitter. 
 Upon registration, users can also choose a username (a.k.a. screen name or @handle).
 However an account can never change its Twitter ID, but it can change its username.</p>
 
-<h3>Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
+<h3 id="getting-twitter-username-from-twitter-id-using-the-twitter-api-rate-limited">Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
 
-<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using
+<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using 
 <code>http://twitter.com/users/show/[ID]?format=json</code> as the endpoint:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting Twitter username from Twitter ID using the Twitter API (limited)  (TwitterUserIdToScreenName_limited.php)</span> <a href='/downloads/code/TwitterUserIdToScreenName_limited.php'>download</a></figcaption>
@@ -131,14 +131,17 @@ However an account can never change its Twitter ID, but it can change its userna
 <p>This code calls Twitter API which has two issues:</p>
 
 <ol>
-<li><p>It needs an access token after the release of Twitter API version 1.1.</p></li>
-<li><p>The number of requests is limited to 150 requests per hour.</p></li>
+  <li>
+    <p>It needs an access token after the release of Twitter API version 1.1.</p>
+  </li>
+  <li>
+    <p>The number of requests is limited to 150 requests per hour.</p>
+  </li>
 </ol>
 
+<h3 id="getting-twitter-username-from-twitter-id-without-using-the-twitter-api-scalable">Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
 
-<h3>Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
-
-<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn&rsquo;t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
+<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn’t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting Twitter username from Twitter ID without using the Twitter API  (TwitterUserIdToScreenName.php)</span> <a href='/downloads/code/TwitterUserIdToScreenName.php'>download</a></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -243,17 +246,16 @@ However an account can never change its Twitter ID, but it can change its userna
 
 <p>Usage Example:</p>
 
-<p>```</p>
-
-<blockquote><p>echo 1180576736 | php TwitterUserIdToScreenName.php
+<p><code>
+&gt; echo 1180576736 | php TwitterUserIdToScreenName.php
 1180576736,AccessToken
-```
-or you can lookup a list of IDs:</p></blockquote>
+</code>
+or you can lookup a list of IDs:</p>
 
-<p>```</p>
+<p><code>
+&gt; cat list_IDs | php TwitterUserIdToScreenName.php
+</code></p>
 
-<blockquote><p>cat list_IDs | php TwitterUserIdToScreenName.php
-```</p></blockquote>
 ]]></content>
   </entry>
   

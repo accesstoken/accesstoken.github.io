@@ -49,7 +49,21 @@
 <meta property="og:title" content="Meta Data Science By Massoud Seifi, Ph.D. Data Scientist" />
 <meta property="og:image" content="/images/metadatascience.gif" />
 <link href="/stylesheets/data-table.css" media="screen, projection" rel="stylesheet" type="text/css" />
-
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ ['$', '$'], ["\\(", "\\)"] ],
+        displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+      //,
+      //displayAlign: "left",
+      //displayIndent: "2em"
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -82,21 +96,6 @@
 <!-- End of StatCounter Code for Default Guide -->
 </head>
 
-<!-- mathjax config similar to math.stackexchange -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  jax: ["input/TeX", "output/HTML-CSS"],
-  tex2jax: {
-    inlineMath: [ ['$', '$'] ],
-    displayMath: [ ['$$', '$$']],
-    processEscapes: true,
-    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-  },
-  messageStyle: "none",
-  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
-});
-</script>
-<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
 
 <body   >
   <header role="banner"><hgroup>
@@ -158,204 +157,207 @@ MathJax.Hub.Config({
   </header>
 
 
-<div class="entry-content"><p>Facebook <a href="http://developers.facebook.com/docs/reference/api/">Graph API</a> and
-<a href="http://developers.facebook.com/docs/reference/fql/">FQL</a> don&rsquo;t provide you with a simple way of getting the creation date of a Facebook account.
-But if you have a valid Facebook <a href="http://developers.facebook.com/tools/explorer">Access Token</a> with <em>&lsquo;read_stream&rsquo;</em> permission, it is possible to estimate the Facebook account creation date
-by finding the creation date of the oldest user post. According to the Facebook documentation,</p>
+<div class="entry-content"><p>Facebook <a href="http://developers.facebook.com/docs/reference/api/">Graph API</a> and 
+<a href="http://developers.facebook.com/docs/reference/fql/">FQL</a> don’t provide you with a simple way of getting the creation date of a Facebook account. 
+But if you have a valid Facebook <a href="http://developers.facebook.com/tools/explorer">Access Token</a> with <em>‘read_stream’</em> permission, it is possible to estimate the Facebook account creation date
+by finding the creation date of the oldest user post. According to the Facebook documentation, </p>
 
-<blockquote><p>each query of the stream table is limited to the previous 30 days or 50 posts, whichever is greater, however you can use time-specific fields such as created_time along with FQL operators (such as &lt; or >) to retrieve a much greater range of posts.</p></blockquote>
+<blockquote>
+  <p>each query of the stream table is limited to the previous 30 days or 50 posts, whichever is greater, however you can use time-specific fields such as created_time along with FQL operators (such as &lt; or &gt;) to retrieve a much greater range of posts.</p>
+</blockquote>
 
-<p>Also you must have <em>&lsquo;read_stream&rsquo;</em> permission:</p>
+<p>Also you must have <em>‘read_stream’</em> permission:</p>
 
-<blockquote><p>Querying without the <em>&lsquo;read_stream&rsquo;</em> permission will return only the public view of the data (i.e. data that can be see when the user is logged out).</p></blockquote>
+<blockquote>
+  <p>Querying without the <em>‘read_stream’</em> permission will return only the public view of the data (i.e. data that can be see when the user is logged out).</p>
+</blockquote>
 
 <p>Here is some code to do that:</p>
 
-<figure class='code'><figcaption><span>Estimate the Facebook account age  (AccountAge.php)</span> <a href='/downloads/code/AccountAge.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Estimating the Facebook account age by finding the creation date of the oldest post.</span>
-</span><span class='line'><span class="sd"> * A valid Facebook Access Token with read_stream permission is required.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">AccountAge</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$baseUrl</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span> <span class="o">=</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Run a Facebook FQL query</span>
-</span><span class='line'><span class="sd">  * @param string $fql Facebook query </span>
-</span><span class='line'><span class="sd">  * @param string $access_token Facebook Access Token</span>
-</span><span class='line'><span class="sd">  * @return array Return Facebook query result</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span>  <span class="o">.</span> <span class="s1">&#39;fql?q=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$fql</span><span class="p">)</span>
-</span><span class='line'>          <span class="o">.</span> <span class="s1">&#39;&amp;access_token=&#39;</span> <span class="o">.</span> <span class="nv">$access_token</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$decodedResult</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
-</span><span class='line'>          <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>          <span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Facebook FQL Error. Please check if the access token is valid.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Estimate the account age by finding the creation date of the oldest post</span>
-</span><span class='line'><span class="sd">  * @param string $access_token Facebook Access Token</span>
-</span><span class='line'><span class="sd">  * @return integer Return the Facebook account age in seconds</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$date</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DateTime</span><span class="p">(</span><span class="s1">&#39;now&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;# Finding the oldest post may take several minutes to complete.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;# Please wait &quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">){</span> <span class="c1">// Loop until finding the oldest post</span>
-</span><span class='line'>          <span class="k">echo</span> <span class="s2">&quot;.&quot;</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$fql</span> <span class="o">=</span> <span class="s2">&quot;SELECT created_time FROM stream WHERE source_id = me()&quot;</span>
-</span><span class='line'>              <span class="o">.</span> <span class="s2">&quot; AND created_time &lt; &quot;</span> <span class="o">.</span> <span class="nv">$timestamp</span>
-</span><span class='line'>              <span class="o">.</span> <span class="s2">&quot; ORDER BY created_time ASC LIMIT 5000&quot;</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">]))</span>
-</span><span class='line'>              <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$age</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$timestamp</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$age</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Display the account age in a human readable format</span>
-</span><span class='line'><span class="sd">  * @param int $age Account age in seconds</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$years</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$age</span> <span class="o">/</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="nv">$months</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="nv">$days</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span> <span class="o">-</span> <span class="nv">$months</span> <span class="o">*</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account age: </span><span class="si">$years</span><span class="s2"> years, </span><span class="si">$months</span><span class="s2"> months, </span><span class="si">$days</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>   
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AccountAge</span><span class="p">();</span>
-</span><span class='line'><span class="c1">// You need an Access Token with a read_stream permission</span>
-</span><span class='line'><span class="nv">$access_token</span> <span class="o">=</span> <span class="s1">&#39;AAACEdEose0cBAOY7bB3A9m7s3U6hbuJvfECxuZBFRN6YjqPC2eZB5x8WrnK51Gl3WsdwYovmxdPZCKFyJKB5TuFhpxsDJpAZCe9y6eutyQZDZD&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$p</span><span class="o">-&gt;</span><span class="na">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Estimate the Facebook account age  (AccountAge.php)</span> <a href="/downloads/code/AccountAge.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Estimating the Facebook account age by finding the creation date of the oldest post.</span>
+</span><span class="line"><span class="sd"> * A valid Facebook Access Token with read_stream permission is required.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">AccountAge</span>
+</span><span class="line"><span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="nv">$baseUrl</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span> <span class="o">=</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Run a Facebook FQL query</span>
+</span><span class="line"><span class="sd">	 * @param string $fql Facebook query </span>
+</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
+</span><span class="line"><span class="sd">	 * @return array Return Facebook query result</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$url</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span>	<span class="o">.</span> <span class="s1">&#39;fql?q=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$fql</span><span class="p">)</span>
+</span><span class="line">			<span class="o">.</span> <span class="s1">&#39;&amp;access_token=&#39;</span> <span class="o">.</span> <span class="nv">$access_token</span><span class="p">;</span>
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$decodedResult</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class="line">		<span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
+</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="k">else</span>
+</span><span class="line">			<span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Facebook FQL Error. Please check if the access token is valid.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Estimate the account age by finding the creation date of the oldest post</span>
+</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
+</span><span class="line"><span class="sd">	 * @return integer Return the Facebook account age in seconds</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$date</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DateTime</span><span class="p">(</span><span class="s1">&#39;now&#39;</span><span class="p">);</span>
+</span><span class="line">		<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">();</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Finding the oldest post may take several minutes to complete.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Please wait &quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">){</span> <span class="c1">// Loop until finding the oldest post</span>
+</span><span class="line">			<span class="k">echo</span> <span class="s2">&quot;.&quot;</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$fql</span> <span class="o">=</span> <span class="s2">&quot;SELECT created_time FROM stream WHERE source_id = me()&quot;</span>
+</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; AND created_time &lt; &quot;</span> <span class="o">.</span> <span class="nv">$timestamp</span>
+</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; ORDER BY created_time ASC LIMIT 5000&quot;</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">);</span>
+</span><span class="line">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">]))</span>
+</span><span class="line">				<span class="k">break</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="nv">$age</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$timestamp</span><span class="p">;</span>
+</span><span class="line">		<span class="k">return</span> <span class="nv">$age</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Display the account age in a human readable format</span>
+</span><span class="line"><span class="sd">	 * @param int $age Account age in seconds</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$years</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$age</span> <span class="o">/</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="nv">$months</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="nv">$days</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span> <span class="o">-</span> <span class="nv">$months</span> <span class="o">*</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account age: </span><span class="si">$years</span><span class="s2"> years, </span><span class="si">$months</span><span class="s2"> months, </span><span class="si">$days</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>	
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AccountAge</span><span class="p">();</span>
+</span><span class="line"><span class="c1">// You need an Access Token with a read_stream permission</span>
+</span><span class="line"><span class="nv">$access_token</span> <span class="o">=</span> <span class="s1">&#39;AAACEdEose0cBAOY7bB3A9m7s3U6hbuJvfECxuZBFRN6YjqPC2eZB5x8WrnK51Gl3WsdwYovmxdPZCKFyJKB5TuFhpxsDJpAZCe9y6eutyQZDZD&#39;</span><span class="p">;</span>
+</span><span class="line"><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">);</span>
+</span><span class="line"><span class="nv">$p</span><span class="o">-&gt;</span><span class="na">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 </div>
 
 

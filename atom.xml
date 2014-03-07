@@ -4,7 +4,7 @@
   <title><![CDATA[Meta Data Science]]></title>
   <link href="http://metadatascience.com/atom.xml" rel="self"/>
   <link href="http://metadatascience.com/"/>
-  <updated>2014-03-06T16:48:55-08:00</updated>
+  <updated>2014-03-07T10:44:56-08:00</updated>
   <id>http://metadatascience.com/</id>
   <author>
     <name><![CDATA[Massoud Seifi]]></name>
@@ -18,101 +18,98 @@
     <link href="http://metadatascience.com/2014/02/27/random-sampling-from-very-large-files/"/>
     <updated>2014-02-27T14:49:00-08:00</updated>
     <id>http://metadatascience.com/2014/02/27/random-sampling-from-very-large-files</id>
-    <content type="html"><![CDATA[<h3>Random Sampling</h3>
+    <content type="html"><![CDATA[<h3 id="random-sampling">Random Sampling</h3>
 
-<p><a href="http://en.wikipedia.org/wiki/Sampling_(statistics">Random sampling</a>) from a set of entities means any entity has the same chance of selection as any other such entities.
+<p><a href="http://en.wikipedia.org/wiki/Sampling_(statistics)">Random sampling</a> from a set of entities means any entity has the same chance of selection as any other such entities.
 Suppose we want to randomly select $k$ lines from a large text file containing hundreds of millions of lines. We desire that the probability of being selected be the same for every line in the file.</p>
 
-<h3>Algorithm 1</h3>
+<h3 id="algorithm-1">Algorithm 1</h3>
 
-<p>The first approach which comes in mind is to</p>
+<p>The first approach which comes in mind is to </p>
 
 <ul>
-<li>Count the number of lines in the file,</li>
-<li>Create a sorted random set of $k$ integers between 1 and number of lines in the file,</li>
-<li>Iterate over the random integers and read the file line by line.
+  <li>Count the number of lines in the file, </li>
+  <li>Create a sorted random set of $k$ integers between 1 and number of lines in the file,</li>
+  <li>Iterate over the random integers and read the file line by line. 
 Pick the line if the line number matches one of the the random integers.</li>
 </ul>
 
-
 <p>This algorithm in Python is shown below.</p>
 
-<figure class='code'><figcaption><span>Random Sampling 1  (random_sampler1.py)</span> <a href='http://metadatascience.com/downloads/code/random_sampler1.py'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">linecount</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">random_linenos</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">linecount</span><span class="p">),</span> <span class="n">k</span><span class="p">),</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">lineno</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
-</span><span class='line'>              <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_linenos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span class='line'>                  <span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span class='line'>              <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                  <span class="k">break</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">sample</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Random Sampling 1  (random_sampler1.py)</span> <a href="http://metadatascience.com/downloads/code/random_sampler1.py">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">random</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class="line">	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class="line">		<span class="n">linecount</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+</span><span class="line">		<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">		<span class="n">random_linenos</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">linecount</span><span class="p">),</span> <span class="n">k</span><span class="p">),</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class="line">		<span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">		<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span class="line">			<span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">lineno</span><span class="p">:</span>
+</span><span class="line">				<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class="line">				<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">random_linenos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class="line">					<span class="n">lineno</span> <span class="o">=</span> <span class="n">random_linenos</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class="line">				<span class="k">else</span><span class="p">:</span>
+</span><span class="line">					<span class="k">break</span>
+</span><span class="line">	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h3 id="algorithm-2-reservoir-sampling">Algorithm 2: Reservoir sampling</h3>
 
-<h3>Algorithm 2: Reservoir sampling</h3>
+<p>As you see, in previous algorithm, we scan the file two times. First time for counting the number of lines in the file, and second time to select random lines. 
+There are some algorithms which even work without knowing in advance the total number of items. One classical algorithm form Alan Waterman called <a href="http://en.wikipedia.org/wiki/Reservoir_sampling">Reservoir sampling</a> is exposed in the second volume of Donald Knuth’s “<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">The Art of Computer Programming</a>”. </p>
 
-<p>As you see, in previous algorithm, we scan the file two times. First time for counting the number of lines in the file, and second time to select random lines.
-There are some algorithms which even work without knowing in advance the total number of items. One classical algorithm form Alan Waterman called <a href="http://en.wikipedia.org/wiki/Reservoir_sampling">Reservoir sampling</a> is exposed in the second volume of Donald Knuth&rsquo;s &ldquo;<a href="http://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">The Art of Computer Programming</a>&rdquo;.</p>
+<p>Suppose we want to select $k$ items from a set of items. We start by filling the “reservoir” with the first $k$ items, and then for each $i^{th}$ item remaining in the set, we generate a random number $r$ between $1$ and $i$. If $r$ is less than $k$, we replace the $r^{th}$ item of the reservoir with the $i^{th}$ item of the set. We continue processing items until we reach the end of the set. </p>
 
-<p>Suppose we want to select $k$ items from a set of items. We start by filling the “reservoir” with the first $k$ items, and then for each $i^{th}$ item remaining in the set, we generate a random number $r$ between $1$ and $i$. If $r$ is less than $k$, we replace the $r^{th}$ item of the reservoir with the $i^{th}$ item of the set. We continue processing items until we reach the end of the set.</p>
-
-<figure class='code'><figcaption><span>Random Sampling 2  (random_sampler2.py)</span> <a href='http://metadatascience.com/downloads/code/random_sampler2.py'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>      <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
-</span><span class='line'>          <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
-</span><span class='line'>          <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>              <span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
-</span><span class='line'>              <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
-</span><span class='line'>                  <span class="n">sample</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
-</span><span class='line'>  <span class="k">return</span> <span class="n">sample</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Random Sampling 2  (random_sampler2.py)</span> <a href="http://metadatascience.com/downloads/code/random_sampler2.py">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">random</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class="line">	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class="line">		<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span class="line">			<span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+</span><span class="line">				<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class="line">			<span class="k">else</span><span class="p">:</span>
+</span><span class="line">				<span class="n">r</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+</span><span class="line">				<span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">k</span><span class="p">:</span>
+</span><span class="line">					<span class="n">sample</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+</span><span class="line">	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>It is easy to prove by induction that this approach works and each line has the same probability of being selected as the other lines:</p>
 
@@ -123,108 +120,109 @@ There are some algorithms which even work without knowing in advance the total n
 <p>Now, suppose the $11^{th}$ item comes. The desired probability is now $\frac{k}{n} = \frac{10}{11}$. We have:</p>
 
 <ul>
-<li><p>According to the reservoir sampling algorithm above, the probability of $11^{th}$ item to being selected is $\frac{10}{11} \checkmark$.</p></li>
-<li><p>For the items already in the reservoir, the chance of being in the sample set and also remaining in the sample set after seeing the $11^{th}$ item, is their previous probability to be there, multiple the probability of not being replace by the $11^{th}$. So we have:</p>
+  <li>
+    <p>According to the reservoir sampling algorithm above, the probability of $11^{th}$ item to being selected is $\frac{10}{11} \checkmark$.</p>
+  </li>
+  <li>
+    <p>For the items already in the reservoir, the chance of being in the sample set and also remaining in the sample set after seeing the $11^{th}$ item, is their previous probability to be there, multiple the probability of not being replace by the $11^{th}$. So we have:</p>
 
-<p>  Pr = Probability that a selected item remains in the reservoir</p>
+    <p>Pr = Probability that a selected item remains in the reservoir</p>
 
-<p>  = Previous probability to be there * Probability of not being replaced</p>
+    <p>= Previous probability to be there * Probability of not being replaced</p>
 
-<p>  = Previous probability to be there * ( 1 &ndash; Probability of being replaced by $11^{th}$ item)</p>
+    <p>= Previous probability to be there * ( 1 - Probability of being replaced by $11^{th}$ item)</p>
 
-<p>  The chance that an item in the reservoir being replaced with $11^{th}$ item is the probability of $11^{th}$ item to be selected, which is $\frac{10}{11}$, multiple the probability of being the replacement candidate between 10 items, which is $\frac{1}{10}$. So we have: $$Pr = \frac{10}{10}<em>(1-\frac{10}{11}</em>\frac{1}{10})=\frac{10}{11} \checkmark$$.</p></li>
+    <p>The chance that an item in the reservoir being replaced with $11^{th}$ item is the probability of $11^{th}$ item to be selected, which is $\frac{10}{11}$, multiple the probability of being the replacement candidate between 10 items, which is $\frac{1}{10}$. So we have: <script type="math/tex">Pr = \frac{10}{10}*(1-\frac{10}{11}*\frac{1}{10})=\frac{10}{11} \checkmark</script>.</p>
+  </li>
 </ul>
-
 
 <p>Likewise, for the $12^{th}$ item we have:</p>
 
 <ul>
-<li><p>Probability of $12^{th}$ item to being selected is $\frac{10}{12} \checkmark$.</p></li>
-<li><p>For the items already in the reservoir: $$Pr = \frac{10}{11}<em>(1-\frac{10}{12}</em>\frac{1}{10})=\frac{10}{12} \checkmark$$</p></li>
+  <li>
+    <p>Probability of $12^{th}$ item to being selected is $\frac{10}{12} \checkmark$.</p>
+  </li>
+  <li>
+    <p>For the items already in the reservoir: <script type="math/tex">Pr = \frac{10}{11}*(1-\frac{10}{12}*\frac{1}{10})=\frac{10}{12} \checkmark</script></p>
+  </li>
 </ul>
-
 
 <p>And this can be extended for the $n^{th}$ item. Although reservoir sampling is an interesting approach but it is too slow for our problem here.</p>
 
-<h3>Algorithm 3</h3>
+<h3 id="algorithm-3">Algorithm 3</h3>
 
 <p>There is another interesting approach when the lines have approximately the same length (for example, we deal with a huge list of email addresses). In this case, there is a correlation between line numbers and the file size. So, we can use the algorithm below:</p>
 
-<figure class='code'><figcaption><span>Random Sampling 3  (random_sampler3.py)</span> <a href='http://metadatascience.com/downloads/code/random_sampler3.py'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">random</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
-</span><span class='line'>  <span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span class='line'>  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class='line'>      <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">filesize</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">random_set</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">filesize</span><span class="p">),</span> <span class="n">k</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
-</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">random_set</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-</span><span class='line'>          <span class="c"># Skip current line (because we might be in the middle of a line) </span>
-</span><span class='line'>          <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'>          <span class="c"># Append the next line to the sample set </span>
-</span><span class='line'>          <span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="n">sample</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Random Sampling 3  (random_sampler3.py)</span> <a href="http://metadatascience.com/downloads/code/random_sampler3.py">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">random</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">random_sampler</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+</span><span class="line">	<span class="n">sample</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class="line">	<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class="line">		<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line">		<span class="n">filesize</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">		<span class="n">random_set</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="n">filesize</span><span class="p">),</span> <span class="n">k</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+</span><span class="line">			<span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">random_set</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</span><span class="line">			<span class="c"># Skip current line (because we might be in the middle of a line) </span>
+</span><span class="line">			<span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class="line">			<span class="c"># Append the next line to the sample set </span>
+</span><span class="line">			<span class="n">sample</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">return</span> <span class="n">sample</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Basically, we get the file size. Create a sorted random set of k random positions in the file (between 1 and the file size). For each random position, we seek that position, skip a line, and put the next line to the sample set.</p>
 
-<h3>Benchmark</h3>
+<h3 id="benchmark">Benchmark</h3>
 
 <p>The table below shows the elapsed time for selecting 1000 lines from a large (~ 40M lines) and a very large file(~ 300M lines) for each algorithm. We see that the algorithm 3 is much faster. As I mentioned before, the only assumption is that the lines should have approximately the same length.</p>
 
 <table>
-<thead>
-<tr>
-<th></th>
-<th align="left"> Algorithm           </th>
-<th align="right"> File 1 (~ 40M lines)  </th>
-<th align="right"> File 2 (~ 300M lines) </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td></td>
-<td align="left"> random_sampler1.py  </td>
-<td align="right"> 6.641s                </td>
-<td align="right"> 1m14.184s             |</td>
-</tr>
-<tr>
-<td></td>
-<td align="left"> random_sampler2.py  </td>
-<td align="right"> 50.406s               </td>
-<td align="right"> 6m51.078s             |</td>
-</tr>
-<tr>
-<td></td>
-<td align="left"> random_sampler3.py  </td>
-<td align="right"> 0.019s                </td>
-<td align="right"> 3.119s                |</td>
-</tr>
-</tbody>
+  <thead>
+    <tr>
+      <th style="text-align: left">Algorithm</th>
+      <th style="text-align: right">File 1 (~ 40M lines)</th>
+      <th style="text-align: right">File 2 (~ 300M lines)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">random_sampler1.py</td>
+      <td style="text-align: right">6.641s</td>
+      <td style="text-align: right">1m14.184s</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">random_sampler2.py</td>
+      <td style="text-align: right">50.406s</td>
+      <td style="text-align: right">6m51.078s</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">random_sampler3.py</td>
+      <td style="text-align: right">0.019s</td>
+      <td style="text-align: right">3.119s</td>
+    </tr>
+  </tbody>
 </table>
 
 ]]></content>
@@ -235,245 +233,242 @@ There are some algorithms which even work without knowing in advance the total n
     <link href="http://metadatascience.com/2013/08/13/how-to-get-twitter-username-from-twitter-id/"/>
     <updated>2013-08-13T11:18:00-07:00</updated>
     <id>http://metadatascience.com/2013/08/13/how-to-get-twitter-username-from-twitter-id</id>
-    <content type="html"><![CDATA[<h3>Twitter ID and Username</h3>
+    <content type="html"><![CDATA[<h3 id="twitter-id-and-username">Twitter ID and Username</h3>
 
-<p>The Twitter ID is a unique number identifying an account on Twitter.
+<p>The Twitter ID is a unique number identifying an account on Twitter. 
 Upon registration, users can also choose a username (a.k.a. screen name or @handle).
 However an account can never change its Twitter ID, but it can change its username.</p>
 
-<h3>Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
+<h3 id="getting-twitter-username-from-twitter-id-using-the-twitter-api-rate-limited">Getting Twitter username from Twitter ID using the Twitter API (rate limited)</h3>
 
-<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using
+<p>I was trying to lookup some Twitter IDs and find out what their corresponding usernames are. My first approach was using the code below using 
 <code>http://twitter.com/users/show/[ID]?format=json</code> as the endpoint:</p>
 
-<figure class='code'><figcaption><span>Getting Twitter username from Twitter ID using the Twitter API (limited)  (TwitterUserIdToScreenName_limited.php)</span> <a href='http://metadatascience.com/downloads/code/TwitterUserIdToScreenName_limited.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
-</span><span class='line'><span class="sd"> * This approach does not work in large scale. It&#39;s limited to 150 requests per hour.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/users/show/&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span> <span class="o">.</span> <span class="s1">&#39;?format=json&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">false</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
-</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Getting Twitter username from Twitter ID using the Twitter API (limited)  (TwitterUserIdToScreenName_limited.php)</span> <a href="http://metadatascience.com/downloads/code/TwitterUserIdToScreenName_limited.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
+</span><span class="line"><span class="sd"> * This approach does not work in large scale. It&#39;s limited to 150 requests per hour.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/users/show/&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">){</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
+</span><span class="line">		    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span> <span class="o">.</span> <span class="s1">&#39;?format=json&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">false</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$json</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">])){</span>
+</span><span class="line">			<span class="k">return</span> <span class="nv">$json</span><span class="p">[</span><span class="s1">&#39;screen_name&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
+</span><span class="line">	<span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
+</span><span class="line">	<span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class="line">	<span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This code calls Twitter API which has two issues:</p>
 
 <ol>
-<li><p>It needs an access token after the release of Twitter API version 1.1.</p></li>
-<li><p>The number of requests is limited to 150 requests per hour.</p></li>
+  <li>
+    <p>It needs an access token after the release of Twitter API version 1.1.</p>
+  </li>
+  <li>
+    <p>The number of requests is limited to 150 requests per hour.</p>
+  </li>
 </ol>
 
+<h3 id="getting-twitter-username-from-twitter-id-without-using-the-twitter-api-scalable">Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
 
-<h3>Getting Twitter username from Twitter ID without using the Twitter API (scalable)</h3>
+<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn’t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
 
-<p>I tried another approach using <code>http://twitter.com/account/redirect_by_id?id=</code> which doesn&rsquo;t call the Twitter API and consequently has no rate limit. This approach worked fine for me and I could easily look up thousands of Twitter IDs. Here is the code:</p>
-
-<figure class='code'><figcaption><span>Getting Twitter username from Twitter ID without using the Twitter API  (TwitterUserIdToScreenName.php)</span> <a href='http://metadatascience.com/downloads/code/TwitterUserIdToScreenName.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
-</span><span class='line'><span class="sd"> * This code works fine in large scale.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/account/redirect_by_id?id=&#39;</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
-</span><span class='line'>          <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_NOBODY</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nv">$info</span> <span class="o">=</span>  <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])){</span>
-</span><span class='line'>          <span class="k">return</span>  <span class="nb">str_replace</span><span class="p">(</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span> <span class="nx">PHP_URL_PATH</span><span class="p">));</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
-</span><span class='line'>  <span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
-</span><span class='line'>  <span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Getting Twitter username from Twitter ID without using the Twitter API  (TwitterUserIdToScreenName.php)</span> <a href="http://metadatascience.com/downloads/code/TwitterUserIdToScreenName.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Getting the Twitter usename from Twitter ID</span>
+</span><span class="line"><span class="sd"> * This code works fine in large scale.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">TwitterUserIdToScreenName</span> <span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">protected</span> <span class="nv">$href_base</span> <span class="o">=</span> <span class="s1">&#39;http://twitter.com/account/redirect_by_id?id=&#39;</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">is_numeric</span><span class="p">(</span><span class="nv">$twitter_user_id</span><span class="p">)){</span>
+</span><span class="line">		    <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$href</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">href_base</span> <span class="o">.</span> <span class="nv">$twitter_user_id</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$href</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_NOBODY</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HEADER</span>         <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_FOLLOWLOCATION</span> <span class="p">,</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nv">$info</span> <span class="o">=</span>  <span class="nb">curl_getinfo</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">if</span> <span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">])){</span>
+</span><span class="line">			<span class="k">return</span>  <span class="nb">str_replace</span><span class="p">(</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">parse_url</span><span class="p">(</span><span class="nv">$info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span> <span class="nx">PHP_URL_PATH</span><span class="p">));</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TwitterUserIdToScreenName</span><span class="p">();</span>
+</span><span class="line">
+</span><span class="line"><span class="k">while</span> <span class="p">(</span><span class="nv">$line</span> <span class="o">=</span> <span class="nb">fgets</span><span class="p">(</span><span class="nx">STDIN</span><span class="p">)){</span>
+</span><span class="line">	<span class="nv">$id</span> <span class="o">=</span> <span class="nx">trim</span><span class="p">(</span><span class="nv">$line</span><span class="p">);</span>
+</span><span class="line">	<span class="nv">$screen_name</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getScreenNameFromUserId</span><span class="p">(</span><span class="nv">$id</span><span class="p">);</span>
+</span><span class="line">	<span class="k">if</span> <span class="p">(</span> <span class="nb">is_string</span><span class="p">(</span><span class="nv">$screen_name</span><span class="p">)</span> <span class="p">){</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="si">$id</span><span class="s2">,</span><span class="si">$screen_name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line"><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Usage Example:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; echo 1180576736 | php TwitterUserIdToScreenName.php
-</span><span class='line'>1180576736,AccessToken</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">&gt; echo 1180576736 | php TwitterUserIdToScreenName.php
+</span><span class="line">1180576736,AccessToken</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>or you can lookup a list of IDs:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&gt; cat list_IDs | php TwitterUserIdToScreenName.php</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">&gt; cat list_IDs | php TwitterUserIdToScreenName.php</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 ]]></content>
   </entry>
@@ -483,314 +478,282 @@ However an account can never change its Twitter ID, but it can change its userna
     <link href="http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r/"/>
     <updated>2013-07-03T12:22:00-07:00</updated>
     <id>http://metadatascience.com/2013/07/03/plotting-the-frequency-distribution-using-r</id>
-    <content type="html"><![CDATA[<h3>Introduction</h3>
+    <content type="html"><![CDATA[<h3 id="introduction">Introduction</h3>
 
-<p><a href="http://www.r-project.org/">R</a> is an open source language and environment for statistical computing and graphics.
-It&rsquo;s an implementation of the <a href="http://en.wikipedia.org/wiki/S_(programming_language">S language</a>) which was developed at Bell Laboratories by John Chambers and colleagues.
-R provides a wide variety of statistical and graphical techniques, including linear and nonlinear modeling, classical statistical tests, time-series analysis, classification, clustering, and others.
-It is also an interpreted language and can be accessed through a command-line interpreter: For example, if a user types &ldquo;2+2&rdquo; at the R command prompt and press enter, the computer replies with &ldquo;4&rdquo;.
+<p><a href="http://www.r-project.org/">R</a> is an open source language and environment for statistical computing and graphics. 
+It’s an implementation of the <a href="http://en.wikipedia.org/wiki/S_(programming_language)">S language</a> which was developed at Bell Laboratories by John Chambers and colleagues.
+R provides a wide variety of statistical and graphical techniques, including linear and nonlinear modeling, classical statistical tests, time-series analysis, classification, clustering, and others. 
+It is also an interpreted language and can be accessed through a command-line interpreter: For example, if a user types “2+2” at the R command prompt and press enter, the computer replies with “4”.
 R is freely available under the GNU General Public License.</p>
 
-<h3>Plotting The Frequency Distribution</h3>
+<h3 id="plotting-the-frequency-distribution">Plotting The Frequency Distribution</h3>
 
-<h4>Frequency distribution</h4>
+<h4 id="frequency-distribution">Frequency distribution</h4>
 
-<p>A frequency distribution shows the number of occurrences in each category of a categorical variable.
+<p>A frequency distribution shows the number of occurrences in each category of a categorical variable. 
 For example, in a sample set of users with their favourite colors, we can find out how many users like a specific color.</p>
 
-<h4>Data set</h4>
+<h4 id="data-set">Data set</h4>
 
 <p>Suppose a data set of 30 records including user ID, favorite color and gender:</p>
 
-<figure class='code'><figcaption><span>Sample Set  (sample.csv)</span> <a href='http://metadatascience.com/downloads/code/sample.csv'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>ID,Color,Gender
-</span><span class='line'>792141B,Blue,Male
-</span><span class='line'>795156A,Blue,Male
-</span><span class='line'>795156B,Blue,Male
-</span><span class='line'>795156C,Blue,Male
-</span><span class='line'>795156E,Blue,Male
-</span><span class='line'>795156G,Blue,Female
-</span><span class='line'>795156I,Blue,Male
-</span><span class='line'>795156J,White,Male
-</span><span class='line'>795156M,Red,Male
-</span><span class='line'>795156N,Blue,Male
-</span><span class='line'>795156O,Green,Male
-</span><span class='line'>795156P,Red,Male
-</span><span class='line'>795156Q,Blue,Male
-</span><span class='line'>795156S,White,Male
-</span><span class='line'>795156T,Blue,Male
-</span><span class='line'>795156W,Red,Female
-</span><span class='line'>800731A,Red,Male
-</span><span class='line'>800731C,Blue,Male
-</span><span class='line'>800731E,Blue,Male
-</span><span class='line'>800731F,Blue,Female
-</span><span class='line'>800731G,Red,Male
-</span><span class='line'>800731I,Blue,Female
-</span><span class='line'>800731K,Blue,Female
-</span><span class='line'>800731M,Blue,Male
-</span><span class='line'>800731N,Blue,Female
-</span><span class='line'>800731O,Blue,Female
-</span><span class='line'>800731Q,Blue,Male
-</span><span class='line'>800731W,Blue,Male
-</span><span class='line'>800731X,Red,Male
-</span><span class='line'>800731Y,Red,Male
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample Set  (sample.csv)</span> <a href="http://metadatascience.com/downloads/code/sample.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">ID,Color,Gender
+</span><span class="line">792141B,Blue,Male
+</span><span class="line">795156A,Blue,Male
+</span><span class="line">795156B,Blue,Male
+</span><span class="line">795156C,Blue,Male
+</span><span class="line">795156E,Blue,Male
+</span><span class="line">795156G,Blue,Female
+</span><span class="line">795156I,Blue,Male
+</span><span class="line">795156J,White,Male
+</span><span class="line">795156M,Red,Male
+</span><span class="line">795156N,Blue,Male
+</span><span class="line">795156O,Green,Male
+</span><span class="line">795156P,Red,Male
+</span><span class="line">795156Q,Blue,Male
+</span><span class="line">795156S,White,Male
+</span><span class="line">795156T,Blue,Male
+</span><span class="line">795156W,Red,Female
+</span><span class="line">800731A,Red,Male
+</span><span class="line">800731C,Blue,Male
+</span><span class="line">800731E,Blue,Male
+</span><span class="line">800731F,Blue,Female
+</span><span class="line">800731G,Red,Male
+</span><span class="line">800731I,Blue,Female
+</span><span class="line">800731K,Blue,Female
+</span><span class="line">800731M,Blue,Male
+</span><span class="line">800731N,Blue,Female
+</span><span class="line">800731O,Blue,Female
+</span><span class="line">800731Q,Blue,Male
+</span><span class="line">800731W,Blue,Male
+</span><span class="line">800731X,Red,Male
+</span><span class="line">800731Y,Red,Male
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h4 id="reading-the-csv-file">Reading the csv file</h4>
 
-<h4>Reading the csv file</h4>
+<p>Let’s start with reading the csv file:</p>
 
-<p>Let&rsquo;s start with reading the csv file:</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">data &lt;- read.csv(file = &#39;sample.csv&#39;, header = TRUE, sep = &#39;,&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>data &lt;- read.csv(file = &#39;sample.csv&#39;, header = TRUE, sep = &#39;,&#39;)
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The first argument which is mandatory is the name of file. The second argument indicates whether or not the first row is a set of labels and the third argument indicates the delimiter. The above command will read in the csv file and assign it to a variable called &ldquo;data&rdquo;.</p>
+<p>The first argument which is mandatory is the name of file. The second argument indicates whether or not the first row is a set of labels and the third argument indicates the delimiter. The above command will read in the csv file and assign it to a variable called “data”.</p>
 
 <p>You can use the following command to see the list of column names:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>names(data)
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">names(data)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>which results:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>[1] &quot;ID&quot;     &quot;Color&quot;  &quot;Gender&quot;
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">[1] &quot;ID&quot;     &quot;Color&quot;  &quot;Gender&quot;
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Or you can use following command to see a summary of the data:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>summary(data)
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">summary(data)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">   ID       Color       Gender
+</span><span class="line"> 792141B: 1   Blue :20   Female: 7
+</span><span class="line"> 795156A: 1   Green: 1   Male  :23
+</span><span class="line"> 795156B: 1   Red  : 7
+</span><span class="line"> 795156C: 1   White: 2
+</span><span class="line"> 795156E: 1
+</span><span class="line"> 795156G: 1
+</span><span class="line"> (Other):24
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>As you see, the number of occurrences of each color is shown in the summary. </p>
 
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>   ID       Color       Gender
-</span><span class='line'> 792141B: 1   Blue :20   Female: 7
-</span><span class='line'> 795156A: 1   Green: 1   Male  :23
-</span><span class='line'> 795156B: 1   Red  : 7
-</span><span class='line'> 795156C: 1   White: 2
-</span><span class='line'> 795156E: 1
-</span><span class='line'> 795156G: 1
-</span><span class='line'> (Other):24
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>As you see, the number of occurrences of each color is shown in the summary.</p>
-
-<h4>Table function</h4>
+<h4 id="table-function">Table function</h4>
 
 <p><em>table()</em>  uses the cross-classifying factors to build a contingency table of the counts at each combination of factor levels.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>table(data$Color)
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">table(data$Color)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line"> Blue Green   Red White
+</span><span class="line">   20     1     7     2
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'> Blue Green   Red White
-</span><span class='line'>   20     1     7     2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h4>Plotting</h4>
+<h4 id="plotting">Plotting</h4>
 
 <p>Now we can plot it easily using the <em>barplot</em> command:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>barplot(table(data$Color))
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(data$Color))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<h4>Save the plot as an image</h4>
+<h4 id="save-the-plot-as-an-image">Save the plot as an image</h4>
 
 <p>I can see the plot on my machine, but to put it here on my weblog, I have to save it as an image:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>dev.copy(png, &#39;freq.png&#39;)
-</span><span class='line'>dev.off()
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">dev.copy(png, &#39;freq.png&#39;)
+</span><span class="line">dev.off()
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Here you go…</p>
 
-<p>Here you go&hellip;</p>
+<p><img class="center" src="http://metadatascience.com/images/freq.png" width="380" height="380" /></p>
 
-<p><img class="center" src="http://metadatascience.com/images/freq.png" width="380" height="380"></p>
+<h4 id="factor">Factor</h4>
 
-<h4>Factor</h4>
+<p>The <em>factor</em> function is used to create a factor (or category) from a vector. </p>
 
-<p>The <em>factor</em> function is used to create a factor (or category) from a vector.</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>factor(data$Color)
-</span></code></pre></td></tr></table></div></figure>
-
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>[1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
-</span><span class='line'>[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
-</span><span class='line'>[25] Blue  Blue  Blue  Blue  Red   Red
-</span><span class='line'>Levels: Blue Green Red White
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">[1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class="line">Levels: Blue Green Red White
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Levels is a unique set of values in the vector.</p>
 
-<p>Now, suppose that &ldquo;Yellow&rdquo; was also an option for the users but nobody has chosen it as the favourite color.
+<p>Now, suppose that “Yellow” was also an option for the users but nobody has chosen it as the favourite color. 
 We can use the <em>factor</em> command to customize the categories:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'> [1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
-</span><span class='line'>[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
-</span><span class='line'>[25] Blue  Blue  Blue  Blue  Red   Red
-</span><span class='line'>Levels: Blue Green Yellow Red White
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line"> [1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class="line">Levels: Blue Green Yellow Red White
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Now, we can see Yellow in the frequency distribution:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>table(factor(data$Color, levels = c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)))
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">table(factor(data$Color, levels = c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>  Blue  Green Yellow    Red  White
-</span><span class='line'>    20      1      0      7      2
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">  Blue  Green Yellow    Red  White
+</span><span class="line">    20      1      0      7      2
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>And we can see it on the plot:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>barplot(table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))))
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p><img class="center" src="http://metadatascience.com/images/freq1.png" width="380" height="380"></p>
+<p><img class="center" src="http://metadatascience.com/images/freq1.png" width="380" height="380" /></p>
 
 <p>if you want to see the percentages instead of the values, you can try this:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>t &lt;- table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)))
-</span><span class='line'>barplot(t / sum(t))
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">t &lt;- table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)))
+</span><span class="line">barplot(t / sum(t))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p><img class="center" src="http://metadatascience.com/images/freq2.png" width="380" height="380" /></p>
 
-<p><img class="center" src="http://metadatascience.com/images/freq2.png" width="380" height="380"></p>
+<h4 id="filtering">Filtering</h4>
 
-<h4>Filtering</h4>
+<p>Now, let’s imagine that we want to plot the frequency distribution of favourite colors for men and women separately. 
+The following commands create two subsets of data by filtering the gender and store it to two different variables (Don’t forget the comma!):</p>
 
-<p>Now, let&rsquo;s imagine that we want to plot the frequency distribution of favourite colors for men and women separately.
-The following commands create two subsets of data by filtering the gender and store it to two different variables (Don&rsquo;t forget the comma!):</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>men &lt;- data[data$Gender == &#39;Male&#39;,]
-</span><span class='line'>
-</span><span class='line'>women &lt;- data[data$Gender == &#39;Female&#39;,]
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">men &lt;- data[data$Gender == &#39;Male&#39;,]
+</span><span class="line">
+</span><span class="line">women &lt;- data[data$Gender == &#39;Female&#39;,]
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>now we can plot the distributions seperately:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>l &lt;- c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)
-</span><span class='line'>
-</span><span class='line'>barplot(table(factor(men$Color, levels = l, main = &#39;Men&#39;)
-</span><span class='line'>
-</span><span class='line'>barplot(table(factor(women$Color, levels = l, main = &#39;Women&#39;)
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(men$Color, levels = l, main = &#39;Men&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(women$Color, levels = l, main = &#39;Women&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p><img src="http://metadatascience.com/images/freq_men.png" width="380" height="380" /><img src="http://metadatascience.com/images/freq_women.png" width="380" height="380" /></p>
 
-<p><img src="http://metadatascience.com/images/freq_men.png" width="380" height="380"><img src="http://metadatascience.com/images/freq_women.png" width="380" height="380"></p>
+<h4 id="colors-and-labels">Colors and Labels</h4>
 
-<h4>Colors and Labels</h4>
+<p>Do you like colors and labels?! Here you go…</p>
 
-<p>Do you like colors and labels?! Here you go&hellip;</p>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(data$Color, levels = l)) , col = c(&#39;blue&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;white&#39;), xlab = &#39;Favourite Color&#39;, ylab = &#39;Number Of Users&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>l &lt;- c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)
-</span><span class='line'>
-</span><span class='line'>barplot(table(factor(data$Color, levels = l)) , col = c(&#39;blue&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;white&#39;), xlab = &#39;Favourite Color&#39;, ylab = &#39;Number Of Users&#39;)
-</span></code></pre></td></tr></table></div></figure>
+<p><img class="center" src="http://metadatascience.com/images/freq3.png" width="480" height="480" /></p>
 
-
-<p><img class="center" src="http://metadatascience.com/images/freq3.png" width="480" height="480"></p>
 ]]></content>
   </entry>
   
@@ -799,102 +762,101 @@ The following commands create two subsets of data by filtering the gender and st
     <link href="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/"/>
     <updated>2013-03-14T12:49:00-07:00</updated>
     <id>http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id</id>
-    <content type="html"><![CDATA[<p>In my <a href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">previous post</a>, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call the Facebook API and just based on the user’s Facebook UID.</p>
+    <content type="html"><![CDATA[<p>In my <a href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">previous post</a>, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call the Facebook API and just based on the user’s Facebook UID. </p>
 
 <p>Table below shows the correlation between Facebook UID and Facebook Account Creation Date for the sample set that I analysed.
 The table is represented in <a href="http://en.wikipedia.org/wiki/Comma-separated_values">CSV</a> format as follows:</p>
 
 <p><em>Facebook UID, Account Creation Date(timestamp), Account Creation Date(date)</em>.</p>
 
-<p><strong>Note #1:</strong> To respect the users privacy I hided the last 5 digits of UIDs. You may replace &lsquo;x&rsquo; by &lsquo;0&rsquo; and it should not cause any problem.</p>
+<p><strong>Note #1:</strong> To respect the users privacy I hided the last 5 digits of UIDs. You may replace ‘x’ by ‘0’ and it should not cause any problem.</p>
 
 <p><strong>Note #2:</strong> For a more accurate result, this table should get updated.</p>
 
-<figure class='code'><figcaption><span>Correlation between Facebook UID and Facebook Account Creation Date  (fbid_accountage.csv)</span> <a href='http://metadatascience.com/downloads/code/fbid_accountage.csv'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-</pre></td><td class='code'><pre><code class='text'><span class='line'>1000053132xxxxx,1361330314,2013-02-19
-</span><span class='line'>1000049732xxxxx,1357606484,2013-01-07
-</span><span class='line'>1000047422xxxxx,1354021840,2012-11-27
-</span><span class='line'>1000047355xxxxx,1353417806,2012-11-20
-</span><span class='line'>1000046843xxxxx,1352662415,2012-11-11
-</span><span class='line'>1000046015xxxxx,1350999158,2012-10-23
-</span><span class='line'>1000035523xxxxx,1349467776,2012-10-05
-</span><span class='line'>1000040785xxxxx,1343717040,2012-07-30
-</span><span class='line'>1000041143xxxxx,1342928040,2012-07-21
-</span><span class='line'>1000038945xxxxx,1338526722,2012-05-31
-</span><span class='line'>1000036032xxxxx,1331873652,2012-03-15
-</span><span class='line'>1000031133xxxxx,1320583505,2011-11-06
-</span><span class='line'>1000031024xxxxx,1320464096,2011-11-04
-</span><span class='line'>1000029834xxxxx,1318571069,2011-10-13
-</span><span class='line'>1000029345xxxxx,1315974235,2011-09-13
-</span><span class='line'>1000026042xxxxx,1309652553,2011-07-02
-</span><span class='line'>1000023280xxxxx,1306728328,2011-05-29
-</span><span class='line'>1000024582xxxxx,1304995827,2011-05-09
-</span><span class='line'>1000023732xxxxx,1303537065,2011-04-22
-</span><span class='line'>1000022413xxxxx,1302326877,2011-04-08
-</span><span class='line'>1000022328xxxxx,1300810582,2011-03-22
-</span><span class='line'>1000019352xxxxx,1295628516,2011-01-21
-</span><span class='line'>1000014241xxxxx,1285972221,2010-10-01
-</span><span class='line'>1000013861xxxxx,1281882953,2010-08-15
-</span><span class='line'>1000014436xxxxx,1280116994,2010-07-25
-</span><span class='line'>1000012117xxxxx,1276055448,2010-06-08
-</span><span class='line'>1000010697xxxxx,1274090432,2010-05-17
-</span><span class='line'>1000010425xxxxx,1272438522,2010-04-28
-</span><span class='line'>1000008600xxxxx,1268201411,2010-03-09
-</span><span class='line'>1000008113xxxxx,1267667333,2010-03-03
-</span><span class='line'>1000006286xxxxx,1266618961,2010-02-19
-</span><span class='line'>1000006189xxxxx,1263726284,2010-01-17
-</span><span class='line'>1000006449xxxxx,1262406605,2010-01-01
-</span><span class='line'>1000003298xxxxx,1261112448,2009-12-17
-</span><span class='line'>1000005651xxxxx,1259793952,2009-12-02
-</span><span class='line'>1000005426xxxxx,1259605238,2009-11-30
-</span><span class='line'>1000005072xxxxx,1258400669,2009-11-16
-</span><span class='line'>1000004668xxxxx,1257502719,2009-11-06
-</span><span class='line'>1000002286xxxxx,1252567838,2009-09-10
-</span><span class='line'>1000001160xxxxx,1250562107,2009-08-17
-</span><span class='line'>1000001568xxxxx,1250382196,2009-08-15
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Correlation between Facebook UID and Facebook Account Creation Date  (fbid_accountage.csv)</span> <a href="http://metadatascience.com/downloads/code/fbid_accountage.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">1000053132xxxxx,1361330314,2013-02-19
+</span><span class="line">1000049732xxxxx,1357606484,2013-01-07
+</span><span class="line">1000047422xxxxx,1354021840,2012-11-27
+</span><span class="line">1000047355xxxxx,1353417806,2012-11-20
+</span><span class="line">1000046843xxxxx,1352662415,2012-11-11
+</span><span class="line">1000046015xxxxx,1350999158,2012-10-23
+</span><span class="line">1000035523xxxxx,1349467776,2012-10-05
+</span><span class="line">1000040785xxxxx,1343717040,2012-07-30
+</span><span class="line">1000041143xxxxx,1342928040,2012-07-21
+</span><span class="line">1000038945xxxxx,1338526722,2012-05-31
+</span><span class="line">1000036032xxxxx,1331873652,2012-03-15
+</span><span class="line">1000031133xxxxx,1320583505,2011-11-06
+</span><span class="line">1000031024xxxxx,1320464096,2011-11-04
+</span><span class="line">1000029834xxxxx,1318571069,2011-10-13
+</span><span class="line">1000029345xxxxx,1315974235,2011-09-13
+</span><span class="line">1000026042xxxxx,1309652553,2011-07-02
+</span><span class="line">1000023280xxxxx,1306728328,2011-05-29
+</span><span class="line">1000024582xxxxx,1304995827,2011-05-09
+</span><span class="line">1000023732xxxxx,1303537065,2011-04-22
+</span><span class="line">1000022413xxxxx,1302326877,2011-04-08
+</span><span class="line">1000022328xxxxx,1300810582,2011-03-22
+</span><span class="line">1000019352xxxxx,1295628516,2011-01-21
+</span><span class="line">1000014241xxxxx,1285972221,2010-10-01
+</span><span class="line">1000013861xxxxx,1281882953,2010-08-15
+</span><span class="line">1000014436xxxxx,1280116994,2010-07-25
+</span><span class="line">1000012117xxxxx,1276055448,2010-06-08
+</span><span class="line">1000010697xxxxx,1274090432,2010-05-17
+</span><span class="line">1000010425xxxxx,1272438522,2010-04-28
+</span><span class="line">1000008600xxxxx,1268201411,2010-03-09
+</span><span class="line">1000008113xxxxx,1267667333,2010-03-03
+</span><span class="line">1000006286xxxxx,1266618961,2010-02-19
+</span><span class="line">1000006189xxxxx,1263726284,2010-01-17
+</span><span class="line">1000006449xxxxx,1262406605,2010-01-01
+</span><span class="line">1000003298xxxxx,1261112448,2009-12-17
+</span><span class="line">1000005651xxxxx,1259793952,2009-12-02
+</span><span class="line">1000005426xxxxx,1259605238,2009-11-30
+</span><span class="line">1000005072xxxxx,1258400669,2009-11-16
+</span><span class="line">1000004668xxxxx,1257502719,2009-11-06
+</span><span class="line">1000002286xxxxx,1252567838,2009-09-10
+</span><span class="line">1000001160xxxxx,1250562107,2009-08-17
+</span><span class="line">1000001568xxxxx,1250382196,2009-08-15
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 ]]></content>
   </entry>
   
@@ -903,47 +865,51 @@ The table is represented in <a href="http://en.wikipedia.org/wiki/Comma-separate
     <link href="http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/"/>
     <updated>2013-03-11T11:27:00-07:00</updated>
     <id>http://metadatascience.com/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id</id>
-    <content type="html"><![CDATA[<p>Calling the Facebook API is a (relatively) slow operation; especially if you have to call it multiple times.
+    <content type="html"><![CDATA[<p>Calling the Facebook API is a (relatively) slow operation; especially if you have to call it multiple times. 
 So, when possible, it is a good idea to get the information you need, without making API calls.</p>
 
-<p>Here I show you how to figure out the <em>creation date</em> of a Facebook account without having to call the Facebook API, just based on the user&rsquo;s Facebook UID.</p>
+<p>Here I show you how to figure out the <em>creation date</em> of a Facebook account without having to call the Facebook API, just based on the user’s Facebook UID.</p>
 
-<h3>The Bad Way To Do It</h3>
+<h3 id="the-bad-way-to-do-it">The Bad Way To Do It</h3>
 
 <p>As I explained in <a href="http://metadatascience.com/2013/03/05/how-to-estimate-the-facebook-account-creation-date/">my previous post</a>,
-it is possible to estimate the Facebook account creation date by retrieving the date of user&rsquo;s oldest post.
+it is possible to estimate the Facebook account creation date by retrieving the date of user’s oldest post. 
 This method has a couple of draw backs:</p>
 
-<p><strong>Draw Back #1</strong>: <img class="right" src="http://metadatascience.com/images/screenshot_read_stream.png" width="356" height="262" title="read_stream" > You must have <em>&lsquo;read_stream&rsquo;</em> permission which is an extended Facebook permission to read the user post stream. From a user&rsquo;s point of view, this sounds scarier than the other basic permissions you probably ask for.</p>
+<p><strong>Draw Back #1</strong>: <img class="right" src="http://metadatascience.com/images/screenshot_read_stream.png" width="356" height="262" title="read_stream" /> You must have <em>‘read_stream’</em> permission which is an extended Facebook permission to read the user post stream. From a user’s point of view, this sounds scarier than the other basic permissions you probably ask for.</p>
 
 <p><strong>Draw Back #2</strong>: As an extended permission it triggers a second permission screen that dramatically increases the <a href="http://en.wikipedia.org/wiki/User_experience">UX</a> friction for the users.  (You want <em>low</em> friction UX.)</p>
 
-<p><strong>Draw Back #3</strong>: The overhead of walking the entire post stream to determine age is very costly for the simple piece of information we synthesize. (You have to call the Facebook API over and over and over and over &hellip; again, since the post stream is paginated. I.e., this is at best an O(n) operation, where &ldquo;n&rdquo; relates to the user&rsquo;s activity on Facebook.)</p>
+<p><strong>Draw Back #3</strong>: The overhead of walking the entire post stream to determine age is very costly for the simple piece of information we synthesize. (You have to call the Facebook API over and over and over and over … again, since the post stream is paginated. I.e., this is at best an O(n) operation, where “n” relates to the user’s activity on Facebook.)</p>
 
-<h3>My Search For A Better Way</h3>
+<h3 id="my-search-for-a-better-way">My Search For A Better Way</h3>
 
 <p>To overcome these issues I tried an to find an alternative, asynchronous approach.
 I was wondering if it is possible to estimate a Facebook account creation date by looking at Facebook User ID.
-I couldn&rsquo;t find any official documentation on how Facebook generates a new Facebook user ID and how they are accomplishing that in a scalable fashion.
+I couldn’t find any official documentation on how Facebook generates a new Facebook user ID and how they are accomplishing that in a scalable fashion.
 One answer I could find was from <em>Jack Lindamood, Software Engineer at Facebook 2008-2012</em> which I found <a href="http://www.quora.com/Facebook-1/How-do-Facebook-use-incremented-IDs-for-both-users-and-Pages">here</a>:</p>
 
-<blockquote><p>&lsquo;Lots&rsquo; of MySQL DBs. Each with their own unique number.  Also, each has an autoincrement table. Then it&rsquo;s just some math on the autoincrement value + unique_number * some_cap_per_db (it&rsquo;s a bit more complicated due to special cases, but that&rsquo;s pretty much how it works).</p></blockquote>
+<blockquote>
+  <p>‘Lots’ of MySQL DBs. Each with their own unique number.  Also, each has an autoincrement table. Then it’s just some math on the autoincrement value + unique_number * some_cap_per_db (it’s a bit more complicated due to special cases, but that’s pretty much how it works). </p>
+</blockquote>
 
 <p>Another explanation was from <em>Justin Mitchell, former engineering manager</em>. He explains <a href="http://www.quora.com/Facebook-Company-History/What-is-the-history-of-Facebooks-user-ID-numbering-system">here</a> the history of Facebook user ID numbering system:</p>
 
-<blockquote><p>Facebook&rsquo;s user ID schema reflects the history of the site as it transitioned from a single-server single-school operation to 400 million users.  User ID assignment has gone through several phases, notably:</p>
+<blockquote>
+  <p>Facebook’s user ID schema reflects the history of the site as it transitioned from a single-server single-school operation to 400 million users.  User ID assignment has gone through several phases, notably:</p>
 
-<p>Harvard only.  Facebook (or thefacebook.com, as it was called back then) was opened up to Harvard running off a single box that had mysql and apache.  IDs were auto-incremented, starting at 4 (hi Zuck).</p>
+  <p>Harvard only.  Facebook (or thefacebook.com, as it was called back then) was opened up to Harvard running off a single box that had mysql and apache.  IDs were auto-incremented, starting at 4 (hi Zuck).</p>
 
-<p>Other schools.  Other schools were initially completely separate sites, operating on their own boxes.  IDs were still auto-increment per SQL box, but each server/school had a different prefix.  For instance, all Columbia IDs are between 100000-199999 and all Stanford IDs are between 200000-299999.  You can determine what school any early Facebook user attended based on his or her user ID.</p>
+  <p>Other schools.  Other schools were initially completely separate sites, operating on their own boxes.  IDs were still auto-increment per SQL box, but each server/school had a different prefix.  For instance, all Columbia IDs are between 100000-199999 and all Stanford IDs are between 200000-299999.  You can determine what school any early Facebook user attended based on his or her user ID.</p>
 
-<p>High schools. Someone must have figured out that this ID system didn&rsquo;t scale very well, so Facebook changed its DB layout when high schools were introduced.  While all the college users maintained their current DB, high school users were randomly assigned to one of many many high school DBs.  These users IDs hash to the correct database, rather than simply being floor(ID / 100000).</p>
+  <p>High schools. Someone must have figured out that this ID system didn’t scale very well, so Facebook changed its DB layout when high schools were introduced.  While all the college users maintained their current DB, high school users were randomly assigned to one of many many high school DBs.  These users IDs hash to the correct database, rather than simply being floor(ID / 100000).</p>
 
-<p>Open registration.  Facebook maintained a similar layout once open reg was launched, except the new databases weren&rsquo;t signified as &ldquo;high school.&rdquo;</p>
+  <p>Open registration.  Facebook maintained a similar layout once open reg was launched, except the new databases weren’t signified as “high school.”</p>
 
-<p>64 bit.  Given Facebook&rsquo;s growth rate, it was estimated that the entire world would be on the site by 2011, overflowing 32-bit space.  While we considered limiting the site to the first 4-billion people to register and lobbying governments to reduce the world&rsquo;s population, the growth team pushed pretty hard to just increase the ID space to 64-bit.</p></blockquote>
+  <p>64 bit.  Given Facebook’s growth rate, it was estimated that the entire world would be on the site by 2011, overflowing 32-bit space.  While we considered limiting the site to the first 4-billion people to register and lobbying governments to reduce the world’s population, the growth team pushed pretty hard to just increase the ID space to 64-bit.</p>
+</blockquote>
 
-<h3>Using Facecbook UIDs For Predictions</h3>
+<h3 id="using-facecbook-uids-for-predictions">Using Facecbook UIDs For Predictions</h3>
 
 <p>So it seems that new Facebook IDs are 64 bits and contain 15 digits.
 There is a <a href="https://developers.facebook.com/blog/post/45/">post</a> dating from October 2007 that mentions that Facebook had plans to do this long time ago but
@@ -951,18 +917,18 @@ according to this <a href="https://developers.facebook.com/blog/post/226/">post<
 
 <p>I studied the correlation between Facebook User ID and Account Creation Date for a <em>tiny sample set</em> of 77 Facebook accounts. 41 accounts of this sample set had a user ID containing 15 digits and for the rest the user ID has less than 15 digits. Figures below illustrate this correlation seperately for 64 bit UIDS (left) and old style UIDs (right).</p>
 
-<p><img src="http://metadatascience.com/images/fbid_age_15.png" width="390" height="390" title="uid==15" ><img src="http://metadatascience.com/images/fbid_age_less.png" width="390" height="390" title="uid<15" ></p>
+<p><img src="http://metadatascience.com/images/fbid_age_15.png" width="390" height="390" title="uid==15" /><img src="http://metadatascience.com/images/fbid_age_less.png" width="390" height="390" title="uid&lt;15" /></p>
 
 <p>The graph on the left is for the new(er) Facebook UIDs. The graph on the right is for the old style Facebook IDs. You can see that the correlation between Facebook UID and its <em>creation date</em> is <strong>a lot</strong> better for the new(er) Facebook UIDs than the old ones.</p>
 
 <p>Or in other words, as we observe, there is an interesting correlation between Facebook User ID and Account Creation Date for 64 bit user IDs (see figure on left).
-Also in this sample set, old UIDs are more than 800 days old (see figure on right). The overlap between two graphs might be a period that Facebook was moving from old UIDs to 64 bit ones.</p>
+Also in this sample set, old UIDs are more than 800 days old (see figure on right). The overlap between two graphs might be a period that Facebook was moving from old UIDs to 64 bit ones. </p>
 
-<p><strong>Therefore as an alternative approach to estimate the Facebook account creation date, we may leverage the monotonically increasing property of 64 bit Facebook user IDs and create a table of bounds that would give us at least a quarterly estimate on the creation date for the account &ndash; an appropriate level of granularity for this purpose.</strong>
+<p><strong>Therefore as an alternative approach to estimate the Facebook account creation date, we may leverage the monotonically increasing property of 64 bit Facebook user IDs and create a table of bounds that would give us at least a quarterly estimate on the creation date for the account - an appropriate level of granularity for this purpose.</strong>
 Taking this approach will reduce the number of permissions your application need and dramatically decrease the amount of processing time and remove a variable around the elapsed time to deliver a response.</p>
 
-<p><span style="color:red"><b>Update (March 14, 2013):</b></span>
-See <a href="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">here</a>
+<p><span style="color:red"><b>Update (March 14, 2013):</b></span> 
+See <a href="http://metadatascience.com/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">here</a> 
 to download the data set.</p>
 ]]></content>
   </entry>
@@ -972,204 +938,207 @@ to download the data set.</p>
     <link href="http://metadatascience.com/2013/03/05/how-to-estimate-the-facebook-account-creation-date/"/>
     <updated>2013-03-05T18:17:00-08:00</updated>
     <id>http://metadatascience.com/2013/03/05/how-to-estimate-the-facebook-account-creation-date</id>
-    <content type="html"><![CDATA[<p>Facebook <a href="http://developers.facebook.com/docs/reference/api/">Graph API</a> and
-<a href="http://developers.facebook.com/docs/reference/fql/">FQL</a> don&rsquo;t provide you with a simple way of getting the creation date of a Facebook account.
-But if you have a valid Facebook <a href="http://developers.facebook.com/tools/explorer">Access Token</a> with <em>&lsquo;read_stream&rsquo;</em> permission, it is possible to estimate the Facebook account creation date
-by finding the creation date of the oldest user post. According to the Facebook documentation,</p>
+    <content type="html"><![CDATA[<p>Facebook <a href="http://developers.facebook.com/docs/reference/api/">Graph API</a> and 
+<a href="http://developers.facebook.com/docs/reference/fql/">FQL</a> don’t provide you with a simple way of getting the creation date of a Facebook account. 
+But if you have a valid Facebook <a href="http://developers.facebook.com/tools/explorer">Access Token</a> with <em>‘read_stream’</em> permission, it is possible to estimate the Facebook account creation date
+by finding the creation date of the oldest user post. According to the Facebook documentation, </p>
 
-<blockquote><p>each query of the stream table is limited to the previous 30 days or 50 posts, whichever is greater, however you can use time-specific fields such as created_time along with FQL operators (such as &lt; or >) to retrieve a much greater range of posts.</p></blockquote>
+<blockquote>
+  <p>each query of the stream table is limited to the previous 30 days or 50 posts, whichever is greater, however you can use time-specific fields such as created_time along with FQL operators (such as &lt; or &gt;) to retrieve a much greater range of posts.</p>
+</blockquote>
 
-<p>Also you must have <em>&lsquo;read_stream&rsquo;</em> permission:</p>
+<p>Also you must have <em>‘read_stream’</em> permission:</p>
 
-<blockquote><p>Querying without the <em>&lsquo;read_stream&rsquo;</em> permission will return only the public view of the data (i.e. data that can be see when the user is logged out).</p></blockquote>
+<blockquote>
+  <p>Querying without the <em>‘read_stream’</em> permission will return only the public view of the data (i.e. data that can be see when the user is logged out).</p>
+</blockquote>
 
 <p>Here is some code to do that:</p>
 
-<figure class='code'><figcaption><span>Estimate the Facebook account age  (AccountAge.php)</span> <a href='http://metadatascience.com/downloads/code/AccountAge.php'>download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-</pre></td><td class='code'><pre><code class='php'><span class='line'><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class='line'><span class="sd">/**</span>
-</span><span class='line'><span class="sd"> * Estimating the Facebook account age by finding the creation date of the oldest post.</span>
-</span><span class='line'><span class="sd"> * A valid Facebook Access Token with read_stream permission is required.</span>
-</span><span class='line'><span class="sd"> *</span>
-</span><span class='line'><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class='line'><span class="sd"> */</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">AccountAge</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">public</span> <span class="nv">$baseUrl</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span> <span class="o">=</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Run a Facebook FQL query</span>
-</span><span class='line'><span class="sd">  * @param string $fql Facebook query </span>
-</span><span class='line'><span class="sd">  * @param string $access_token Facebook Access Token</span>
-</span><span class='line'><span class="sd">  * @return array Return Facebook query result</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$url</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span>  <span class="o">.</span> <span class="s1">&#39;fql?q=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$fql</span><span class="p">)</span>
-</span><span class='line'>          <span class="o">.</span> <span class="s1">&#39;&amp;access_token=&#39;</span> <span class="o">.</span> <span class="nv">$access_token</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$decodedResult</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
-</span><span class='line'>      <span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
-</span><span class='line'>          <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="k">else</span>
-</span><span class='line'>          <span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Facebook FQL Error. Please check if the access token is valid.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Estimate the account age by finding the creation date of the oldest post</span>
-</span><span class='line'><span class="sd">  * @param string $access_token Facebook Access Token</span>
-</span><span class='line'><span class="sd">  * @return integer Return the Facebook account age in seconds</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$date</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DateTime</span><span class="p">(</span><span class="s1">&#39;now&#39;</span><span class="p">);</span>
-</span><span class='line'>      <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">();</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;# Finding the oldest post may take several minutes to complete.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;# Please wait &quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">){</span> <span class="c1">// Loop until finding the oldest post</span>
-</span><span class='line'>          <span class="k">echo</span> <span class="s2">&quot;.&quot;</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$fql</span> <span class="o">=</span> <span class="s2">&quot;SELECT created_time FROM stream WHERE source_id = me()&quot;</span>
-</span><span class='line'>              <span class="o">.</span> <span class="s2">&quot; AND created_time &lt; &quot;</span> <span class="o">.</span> <span class="nv">$timestamp</span>
-</span><span class='line'>              <span class="o">.</span> <span class="s2">&quot; ORDER BY created_time ASC LIMIT 5000&quot;</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">);</span>
-</span><span class='line'>          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">]))</span>
-</span><span class='line'>              <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>          <span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">];</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class='line'>      <span class="nv">$age</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$timestamp</span><span class="p">;</span>
-</span><span class='line'>      <span class="k">return</span> <span class="nv">$age</span><span class="p">;</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>  <span class="sd">/**</span>
-</span><span class='line'><span class="sd">  * Display the account age in a human readable format</span>
-</span><span class='line'><span class="sd">  * @param int $age Account age in seconds</span>
-</span><span class='line'><span class="sd">  */</span>
-</span><span class='line'>  <span class="k">public</span> <span class="k">function</span> <span class="nf">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">)</span>
-</span><span class='line'>  <span class="p">{</span>
-</span><span class='line'>      <span class="nv">$years</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$age</span> <span class="o">/</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="nv">$months</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="nv">$days</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span> <span class="o">-</span> <span class="nv">$months</span> <span class="o">*</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class='line'>      <span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account age: </span><span class="si">$years</span><span class="s2"> years, </span><span class="si">$months</span><span class="s2"> months, </span><span class="si">$days</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>   
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AccountAge</span><span class="p">();</span>
-</span><span class='line'><span class="c1">// You need an Access Token with a read_stream permission</span>
-</span><span class='line'><span class="nv">$access_token</span> <span class="o">=</span> <span class="s1">&#39;AAACEdEose0cBAOY7bB3A9m7s3U6hbuJvfECxuZBFRN6YjqPC2eZB5x8WrnK51Gl3WsdwYovmxdPZCKFyJKB5TuFhpxsDJpAZCe9y6eutyQZDZD&#39;</span><span class="p">;</span>
-</span><span class='line'><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">);</span>
-</span><span class='line'><span class="nv">$p</span><span class="o">-&gt;</span><span class="na">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Estimate the Facebook account age  (AccountAge.php)</span> <a href="http://metadatascience.com/downloads/code/AccountAge.php">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+<span class="line-number">71</span>
+<span class="line-number">72</span>
+<span class="line-number">73</span>
+<span class="line-number">74</span>
+<span class="line-number">75</span>
+<span class="line-number">76</span>
+<span class="line-number">77</span>
+<span class="line-number">78</span>
+<span class="line-number">79</span>
+<span class="line-number">80</span>
+<span class="line-number">81</span>
+<span class="line-number">82</span>
+<span class="line-number">83</span>
+<span class="line-number">84</span>
+<span class="line-number">85</span>
+<span class="line-number">86</span>
+<span class="line-number">87</span>
+<span class="line-number">88</span>
+<span class="line-number">89</span>
+<span class="line-number">90</span>
+<span class="line-number">91</span>
+</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
+</span><span class="line"><span class="sd">/**</span>
+</span><span class="line"><span class="sd"> * Estimating the Facebook account age by finding the creation date of the oldest post.</span>
+</span><span class="line"><span class="sd"> * A valid Facebook Access Token with read_stream permission is required.</span>
+</span><span class="line"><span class="sd"> *</span>
+</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line"><span class="sd"> */</span>
+</span><span class="line">
+</span><span class="line"><span class="k">class</span> <span class="nc">AccountAge</span>
+</span><span class="line"><span class="p">{</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">public</span> <span class="nv">$baseUrl</span><span class="p">;</span>
+</span><span class="line">
+</span><span class="line">	<span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span> <span class="o">=</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Run a Facebook FQL query</span>
+</span><span class="line"><span class="sd">	 * @param string $fql Facebook query </span>
+</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
+</span><span class="line"><span class="sd">	 * @return array Return Facebook query result</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$url</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span>	<span class="o">.</span> <span class="s1">&#39;fql?q=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$fql</span><span class="p">)</span>
+</span><span class="line">			<span class="o">.</span> <span class="s1">&#39;&amp;access_token=&#39;</span> <span class="o">.</span> <span class="nv">$access_token</span><span class="p">;</span>
+</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$decodedResult</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
+</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span><span class="line">		<span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
+</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="k">else</span>
+</span><span class="line">			<span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Facebook FQL Error. Please check if the access token is valid.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
+</span><span class="line">
+</span><span class="line">		<span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Estimate the account age by finding the creation date of the oldest post</span>
+</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
+</span><span class="line"><span class="sd">	 * @return integer Return the Facebook account age in seconds</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$date</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DateTime</span><span class="p">(</span><span class="s1">&#39;now&#39;</span><span class="p">);</span>
+</span><span class="line">		<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">();</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Finding the oldest post may take several minutes to complete.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Please wait &quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">){</span> <span class="c1">// Loop until finding the oldest post</span>
+</span><span class="line">			<span class="k">echo</span> <span class="s2">&quot;.&quot;</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$fql</span> <span class="o">=</span> <span class="s2">&quot;SELECT created_time FROM stream WHERE source_id = me()&quot;</span>
+</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; AND created_time &lt; &quot;</span> <span class="o">.</span> <span class="nv">$timestamp</span>
+</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; ORDER BY created_time ASC LIMIT 5000&quot;</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">);</span>
+</span><span class="line">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">]))</span>
+</span><span class="line">				<span class="k">break</span><span class="p">;</span>
+</span><span class="line">			<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">];</span>
+</span><span class="line">		<span class="p">}</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class="line">		<span class="nv">$age</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$timestamp</span><span class="p">;</span>
+</span><span class="line">		<span class="k">return</span> <span class="nv">$age</span><span class="p">;</span>
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line">	<span class="sd">/**</span>
+</span><span class="line"><span class="sd">	 * Display the account age in a human readable format</span>
+</span><span class="line"><span class="sd">	 * @param int $age Account age in seconds</span>
+</span><span class="line"><span class="sd">	 */</span>
+</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">)</span>
+</span><span class="line">	<span class="p">{</span>
+</span><span class="line">		<span class="nv">$years</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$age</span> <span class="o">/</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="nv">$months</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="nv">$days</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span> <span class="o">-</span> <span class="nv">$months</span> <span class="o">*</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
+</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account age: </span><span class="si">$years</span><span class="s2"> years, </span><span class="si">$months</span><span class="s2"> months, </span><span class="si">$days</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>	
+</span><span class="line">	<span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AccountAge</span><span class="p">();</span>
+</span><span class="line"><span class="c1">// You need an Access Token with a read_stream permission</span>
+</span><span class="line"><span class="nv">$access_token</span> <span class="o">=</span> <span class="s1">&#39;AAACEdEose0cBAOY7bB3A9m7s3U6hbuJvfECxuZBFRN6YjqPC2eZB5x8WrnK51Gl3WsdwYovmxdPZCKFyJKB5TuFhpxsDJpAZCe9y6eutyQZDZD&#39;</span><span class="p">;</span>
+</span><span class="line"><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">);</span>
+</span><span class="line"><span class="nv">$p</span><span class="o">-&gt;</span><span class="na">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 ]]></content>
   </entry>
   
@@ -1178,49 +1147,51 @@ by finding the creation date of the oldest user post. According to the Facebook 
     <link href="http://metadatascience.com/2013/02/18/blogging-with-octopress/"/>
     <updated>2013-02-18T13:18:00-08:00</updated>
     <id>http://metadatascience.com/2013/02/18/blogging-with-octopress</id>
-    <content type="html"><![CDATA[<p><img class="right" src="http://metadatascience.com/images/octopress.png" width="227" height="227" title="Octopress" >
-<a href="http://octopress.org/">Octopress</a> is a “blogging framework for hackers” according to its author, &ldquo;Brandon Mathis&rdquo;.
-It is built in Ruby and based on the static web-site generator
-<a href="http://jekyllrb.com/">Jekyll</a> which powers <a href="http://pages.github.com/">GitHub Pages</a>.
-I tried setting up Octopress (on GitHub) by following various tutorials I found online.
+    <content type="html"><![CDATA[<p><img class="right" src="http://metadatascience.com/images/octopress.png" width="227" height="227" title="Octopress" />
+<a href="http://octopress.org/">Octopress</a> is a “blogging framework for hackers” according to its author, “Brandon Mathis”. 
+It is built in Ruby and based on the static web-site generator 
+<a href="http://jekyllrb.com/">Jekyll</a> which powers <a href="http://pages.github.com/">GitHub Pages</a>. 
+I tried setting up Octopress (on GitHub) by following various tutorials I found online. 
 Not all of them worked properly.
-So, now that I got it working, this tutorial details what worked for me;
+So, now that I got it working, this tutorial details what worked for me; 
 and how I was able to get Octopress working on GitHub.</p>
 
-<h3>Install Octopress</h3>
+<h3 id="install-octopress">Install Octopress</h3>
 
 <p>Here you can find instructions on how to install Octopress on Ubuntu (I currently use version 12.10):</p>
 
 <ul>
-<li><h4>Install <a href="http://git-scm.com/">Git</a> using the guide <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</h4></li>
-<li><h4>Install Ruby 1.9.3 using the commands below.</h4></li>
+  <li>
+    <h4 id="install-githttpgit-scmcom-using-the-guide-herehttpgit-scmcombookengetting-started-installing-git">Install <a href="http://git-scm.com/">Git</a> using the guide <a href="http://git-scm.com/book/en/Getting-Started-Installing-Git">here</a>.</h4>
+  </li>
+  <li>
+    <h4 id="install-ruby-193-using-the-commands-below">Install Ruby 1.9.3 using the commands below.</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span>
-</span><span class='line'>git clone git://github.com/sstephenson/rbenv.git .rbenv
-</span><span class='line'>
-</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bashrc
-</span><span class='line'><span class="nb">echo</span> <span class="s1">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; ~/.bashrc
-</span><span class='line'><span class="nb">source</span> ~/.bashrc
-</span><span class='line'>git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-</span><span class='line'>
-</span><span class='line'>rbenv install 1.9.3-p194
-</span><span class='line'>rbenv rehash
-</span><span class='line'>rbenv global 1.9.3-p194
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">cd</span>
+</span><span class="line">git clone git://github.com/sstephenson/rbenv.git .rbenv
+</span><span class="line">
+</span><span class="line"><span class="nb">echo</span> <span class="s1">&#39;export PATH=&quot;$HOME/.rbenv/bin:$PATH&quot;&#39;</span> &gt;&gt; ~/.bashrc
+</span><span class="line"><span class="nb">echo</span> <span class="s1">&#39;eval &quot;$(rbenv init -)&quot;&#39;</span> &gt;&gt; ~/.bashrc
+</span><span class="line"><span class="nb">source</span> ~/.bashrc
+</span><span class="line">git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+</span><span class="line">
+</span><span class="line">rbenv install 1.9.3-p194
+</span><span class="line">rbenv rehash
+</span><span class="line">rbenv global 1.9.3-p194
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Run <code>ruby --version</code> to be sure is Ruby 1.9.3 installed properly.</p>
 
@@ -1229,266 +1200,257 @@ and how I was able to get Octopress working on GitHub.</p>
 I changed <em>.bash_profile</em> to <em>.bashrc</em> and <em>1.9.3-p0</em> to <em>1.9.3-p194</em> to make it work.</p>
 
 <ul>
-<li><h4>Setup Octopress</h4></li>
+  <li>
+    <h4 id="setup-octopress">Setup Octopress</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Get Octopress</span>
-</span><span class='line'>git clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'>
-</span><span class='line'><span class="c"># Install dependencies.</span>
-</span><span class='line'><span class="nb">cd </span>octopress
-</span><span class='line'>gem install bundler
-</span><span class='line'>rbenv rehash
-</span><span class='line'>bundle install
-</span><span class='line'>
-</span><span class='line'><span class="c"># Install the default Octopress theme.</span>
-</span><span class='line'>rake install
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c"># Get Octopress</span>
+</span><span class="line">git clone git://github.com/imathis/octopress.git octopress
+</span><span class="line">
+</span><span class="line"><span class="c"># Install dependencies.</span>
+</span><span class="line"><span class="nb">cd </span>octopress
+</span><span class="line">gem install bundler
+</span><span class="line">rbenv rehash
+</span><span class="line">bundle install
+</span><span class="line">
+</span><span class="line"><span class="c"># Install the default Octopress theme.</span>
+</span><span class="line">rake install
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Deploying to GitHub Pages</h3>
+<h3 id="deploying-to-github-pages">Deploying to GitHub Pages</h3>
 
 <ul>
-<li><h4>Create a GitHub Account</h4>
-
-<p>It has a very easy <a href="https://github.com/signup/">signup</a> process. Be creative to choose a cool username (My username is accesstoken. Is it cool?!). It would be good for your reputation if you can use the same username everywhere, e.g. on Twitter (You can follow me on Twitter with the same username: <a href="http://twitter.com/accesstoken">http://twitter.com/accesstoken</a>).</p></li>
-<li><h4>Create a GitHub repository for the blog</h4>
-
-<p>Create a new GitHub repository and name the repository with your user name: <em>[your-username].github.com</em></p></li>
-<li><h4>Generate a SSH key</h4>
-
-<p>Create a SSH key and add it to your GitHub account using the instructions <a href="https://help.github.com/articles/generating-ssh-keys">here</a>.</p></li>
-<li><h4>Deploy</h4>
-
-<p>Now, run the following command:</p></li>
+  <li>
+    <h4 id="create-a-github-account">Create a GitHub Account</h4>
+    <p>It has a very easy <a href="https://github.com/signup/">signup</a> process. Be creative to choose a cool username (My username is accesstoken. Is it cool?!). It would be good for your reputation if you can use the same username everywhere, e.g. on Twitter (You can follow me on Twitter with the same username: <a href="http://twitter.com/accesstoken">http://twitter.com/accesstoken</a>).</p>
+  </li>
+  <li>
+    <h4 id="create-a-github-repository-for-the-blog">Create a GitHub repository for the blog</h4>
+    <p>Create a new GitHub repository and name the repository with your user name: <em>[your-username].github.com</em></p>
+  </li>
+  <li>
+    <h4 id="generate-a-ssh-key">Generate a SSH key</h4>
+    <p>Create a SSH key and add it to your GitHub account using the instructions <a href="https://help.github.com/articles/generating-ssh-keys">here</a>.</p>
+  </li>
+  <li>
+    <h4 id="deploy">Deploy</h4>
+    <p>Now, run the following command:</p>
+  </li>
 </ul>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake setup_github_pages
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake setup_github_pages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It will ask you to enter the read/write url for your repository.
+<p>It will ask you to enter the read/write url for your repository. 
 Enter the SSH read/write url for your repository which should be like <em>git@github.com:username/username.github.com.git</em>.</p>
 
 <p>Continue by running the following commands:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake generate
-</span><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake generate
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Commit everything in Git:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>git add .
-</span><span class='line'>git commit -m <span class="s1">&#39;initial commit&#39;</span>
-</span><span class='line'>git push origin <span class="nb">source</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">git add .
+</span><span class="line">git commit -m <span class="s1">&#39;initial commit&#39;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>Now, you should have two branches, <em>source</em> and <em>master</em> on your GitHub repository. 
+The <em>source</em> branch contains the files that are used to generate the blog and the <em>master</em> contains the blog itself. </p>
 
-<p>Now, you should have two branches, <em>source</em> and <em>master</em> on your GitHub repository.
-The <em>source</em> branch contains the files that are used to generate the blog and the <em>master</em> contains the blog itself.</p>
-
-<p>After a few minutes, you should be able to see the default Octopress page here: <em><a href="http://">http://</a>[your-username].github.com/</em>. Hooray!</p>
+<p>After a few minutes, you should be able to see the default Octopress page here: <em>http://[your-username].github.com/</em>. Hooray!</p>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Start blogging</h3>
+<h3 id="start-blogging">Start blogging</h3>
 
 <ul>
-<li><h4>Configure your blog</h4></li>
+  <li>
+    <h4 id="configure-your-blog">Configure your blog</h4>
+  </li>
 </ul>
-
 
 <p>You can find a simple guide <a href="http://octopress.org/docs/configuring/">here</a> for configuring your Octopress blog.</p>
 
 <ul>
-<li><h4>Create a new post</h4></li>
+  <li>
+    <h4 id="create-a-new-post">Create a new post</h4>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake <span class="s1">&#39;new_post[Title]&#39;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake <span class="s1">&#39;new_post[Title]&#39;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>This will tell you the name of the <em>Markdown</em> file for your new posting. Just open the file and start typing.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'>---
-</span><span class='line'>layout: post
-</span><span class='line'>title: &quot;Blogging With Octopress&quot;
-</span><span class='line'>date: 2013-02-18 13:18
-</span><span class='line'>comments: true
-</span><span class='line'>categories: Tutorials
-</span><span class='line'>description: &quot;A tutorial for how to use Octopress for blogging.&quot;
-</span><span class='line'>keywords: &quot;octopress, tutorial for octopress, blogging with octopress&quot;
-</span><span class='line'>---
-</span><span class='line'><span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
-</span><span class='line'>This is a link to <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;http://octopress.org/&#39;</span><span class="nt">&gt;</span>Octopress<span class="nt">&lt;/a&gt;</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line">---
+</span><span class="line">layout: post
+</span><span class="line">title: &quot;Blogging With Octopress&quot;
+</span><span class="line">date: 2013-02-18 13:18
+</span><span class="line">comments: true
+</span><span class="line">categories: Tutorials
+</span><span class="line">description: &quot;A tutorial for how to use Octopress for blogging.&quot;
+</span><span class="line">keywords: &quot;octopress, tutorial for octopress, blogging with octopress&quot;
+</span><span class="line">---
+</span><span class="line"><span class="nt">&lt;h1&gt;</span>Hello World!<span class="nt">&lt;/h1&gt;</span>
+</span><span class="line">This is a link to <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&#39;http://octopress.org/&#39;</span><span class="nt">&gt;</span>Octopress<span class="nt">&lt;/a&gt;</span>.
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 <p>You can use <a href="http://daringfireball.net/projects/markdown/basics">Markdown syntax</a>.
 Markdown allows you to write using an easy-to-read, easy-to-write plain text format, then convert it to structurally valid XHTML (or HTML).</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'># Hello World!
-</span><span class='line'>This is a link to [Octopress](http://octopress.org/).
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"># Hello World!
+</span><span class="line">This is a link to [Octopress](http://octopress.org/).
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<p>You can also <a href="http://www.idryman.org/blog/2012/03/10/writing-math-equations-on-octopress">write math equations</a>
-(e.g.
-$$J<em>\alpha(x) = \sum\limits</em>{m=0}^\infty \frac{(-1)<sup>m</sup>}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}$$
-)
-using <a href="http://kramdown.rubyforge.org/">kramdown</a> and <a href="http://www.mathjax.org/">MathJax</a>.</p>
+<p>You can also <a href="http://www.idryman.org/blog/2012/03/10/writing-math-equations-on-octopress">write math equations</a> 
+(e.g. 
+<script type="math/tex">J_\alpha(x) = \sum\limits_{m=0}^\infty \frac{(-1)^m}{m! \, \Gamma(m + \alpha + 1)}{\left({\frac{x}{2}}\right)}^{2 m + \alpha}</script>
+) 
+using <a href="http://kramdown.rubyforge.org/">kramdown</a> and <a href="http://www.mathjax.org/">MathJax</a> (Update: see <a href="http://www.lucypark.kr/blog/2013/02/25/mathjax-kramdown-and-octopress/">here</a>).</p>
 
 <p>Now, run the command below to generate posts and pages into the public directory.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake generate
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake generate
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>If you want to see a preview of your blog before publishing it to the server, run the command below.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake preview
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake preview
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>You will see a message like this:</p>
 
 <p><em>&gt;&gt;&gt; Compass is polling for changes. Press Ctrl-C to Stop.</em></p>
 
-<p>Keep it listening (don&rsquo;t press Ctrl-C), open your browser and open *<a href="http://localhost:4000*">http://localhost:4000*</a> to preview your post.</p>
+<p>Keep it listening (don’t press Ctrl-C), open your browser and open <em>http://localhost:4000</em> to preview your post.</p>
 
 <p>When you are happy with your new post, you can publish it to the server.</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <ul>
-<li><h4>Create a new Page</h4>
-
-<p>If you want to create, for example, the “about” page for your blog, you need to run the command below.</p></li>
+  <li>
+    <h4 id="create-a-new-page">Create a new Page</h4>
+    <p>If you want to create, for example, the “about” page for your blog, you need to run the command below.</p>
+  </li>
 </ul>
 
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake new_page<span class="o">[</span><span class="s2">&quot;about&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake new_page<span class="o">[</span><span class="s2">&quot;about&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will create a new file at <em>source/about/index.markdown</em> that you can edit to write about yourself.
+<p>This will create a new file at <em>source/about/index.markdown</em> that you can edit to write about yourself. 
 Running <code>rake generate</code> command will generate <em>public/about/index.html</em> from the <em>index.markdown</em>
-and <code>rake deploy</code> will push changes to the server.</p>
+and <code>rake deploy</code> will push changes to the server. </p>
 
-<p>You can add an “About” link in the navigation bar for this page.
+<p>You can add an “About” link in the navigation bar for this page. 
 Simply, edit the file <em>source/_includes/custom/navigation.html</em> and add</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/about&quot;</span><span class="nt">&gt;</span>About<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="html"><span class="line"><span class="nt">&lt;li&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/about&quot;</span><span class="nt">&gt;</span>About<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Generate and deploy can be done in a single command:</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>rake gen_deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">rake gen_deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <ul>
-<li><h4>Enable comments</h4></li>
+  <li>
+    <h4 id="enable-comments">Enable comments</h4>
+  </li>
 </ul>
 
-
-<p>Create a <a href="http://disqus.com/">disqus</a> account and add your disqus short name in <em>_config.yml</em> to enable comments on your blog.</p>
+<p>Create a <a href="http://disqus.com/">disqus</a> account and add your disqus short name in <em>_config.yml</em> to enable comments on your blog. </p>
 
 <p>Done!</p>
 
 <hr />
+<p><br /></p>
 
-<br/>
-
-
-<h3>Mapping your custom domain to your GitHub pages</h3>
+<h3 id="mapping-your-custom-domain-to-your-github-pages">Mapping your custom domain to your GitHub pages</h3>
 
 <p>Here you can find instructions on how to map your custom domain to your blog:</p>
 
 <ul>
-<li><h4>Register your domain</h4>
+  <li>
+    <h4 id="register-your-domain">Register your domain</h4>
 
-<p>  I registered my domain <em>metadatascience.com</em> at <a href="http://godaddy.com">GoDaddy.com</a> but you can use any domain name registrar.</p></li>
-<li><h4>Configure the DNS</h4>
+    <p>I registered my domain <em>metadatascience.com</em> at <a href="http://godaddy.com">GoDaddy.com</a> but you can use any domain name registrar.</p>
+  </li>
+  <li>
+    <h4 id="configure-the-dns">Configure the DNS</h4>
 
-<p>  Go to DNS Manager on the control panel of your domain. Point your host to <em>204.232.175.78</em>.</p></li>
-<li><h4>Map your domain to your GitHub pages</h4>
+    <p>Go to DNS Manager on the control panel of your domain. Point your host to <em>204.232.175.78</em>.</p>
+  </li>
+  <li>
+    <h4 id="map-your-domain-to-your-github-pages">Map your domain to your GitHub pages</h4>
 
-<p>  I used the commands below to map my domain <em>metadatascience.com</em> to my GitHub pages at <em>accesstoken.github.com</em>.
-  Replace <em>metadatascience.com</em> with your domain name and <em>accesstoken</em> with your username on GitHub in the code below.</p></li>
+    <p>I used the commands below to map my domain <em>metadatascience.com</em> to my GitHub pages at <em>accesstoken.github.com</em>.
+  Replace <em>metadatascience.com</em> with your domain name and <em>accesstoken</em> with your username on GitHub in the code below.</p>
+  </li>
 </ul>
 
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">echo</span> <span class="s1">&#39;metadatascience.com&#39;</span> &gt;&gt; <span class="nb">source</span>/CNAME
-</span><span class='line'>git add <span class="nb">source</span>/CNAME
-</span><span class='line'>git commit -m <span class="s2">&quot;map accesstoken.github.com to metadatascience.com&quot;</span>
-</span><span class='line'>git push origin <span class="nb">source</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># push changes to master </span>
-</span><span class='line'>rake generate
-</span><span class='line'>rake deploy
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nb">echo</span> <span class="s1">&#39;metadatascience.com&#39;</span> &gt;&gt; <span class="nb">source</span>/CNAME
+</span><span class="line">git add <span class="nb">source</span>/CNAME
+</span><span class="line">git commit -m <span class="s2">&quot;map accesstoken.github.com to metadatascience.com&quot;</span>
+</span><span class="line">git push origin <span class="nb">source</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># push changes to master </span>
+</span><span class="line">rake generate
+</span><span class="line">rake deploy
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Any time you make a DNS (domain name server) change it might take around 24-48 hours to complete, so be patient!</p>
 ]]></content>
