@@ -25,7 +25,7 @@
   <meta name="author" content="Massoud Seifi">
 
   
-  <meta name="description" content="In my previous post, I explained how we can estimate the account creation date of Facebook accounts that have a 15 digit UID without having to call &hellip;">
+  <meta name="description" content="Introduction R is an open source language and environment for statistical computing and graphics. It’s an implementation of the S language which was &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -131,6 +131,317 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2013/07/03/plotting-the-frequency-distribution-using-r/">Plotting the Frequency Distribution Using R</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-03T12:22:00-07:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3 id="introduction">Introduction</h3>
+
+<p><a href="http://www.r-project.org/">R</a> is an open source language and environment for statistical computing and graphics. 
+It’s an implementation of the <a href="http://en.wikipedia.org/wiki/S_(programming_language)">S language</a> which was developed at Bell Laboratories by John Chambers and colleagues.
+R provides a wide variety of statistical and graphical techniques, including linear and nonlinear modeling, classical statistical tests, time-series analysis, classification, clustering, and others. 
+It is also an interpreted language and can be accessed through a command-line interpreter: For example, if a user types “2+2” at the R command prompt and press enter, the computer replies with “4”.
+R is freely available under the GNU General Public License.</p>
+
+<h3 id="plotting-the-frequency-distribution">Plotting The Frequency Distribution</h3>
+
+<h4 id="frequency-distribution">Frequency distribution</h4>
+
+<p>A frequency distribution shows the number of occurrences in each category of a categorical variable. 
+For example, in a sample set of users with their favourite colors, we can find out how many users like a specific color.</p>
+
+<h4 id="data-set">Data set</h4>
+
+<p>Suppose a data set of 30 records including user ID, favorite color and gender:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample Set  (sample.csv)</span> <a href="/downloads/code/sample.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">ID,Color,Gender
+</span><span class="line">792141B,Blue,Male
+</span><span class="line">795156A,Blue,Male
+</span><span class="line">795156B,Blue,Male
+</span><span class="line">795156C,Blue,Male
+</span><span class="line">795156E,Blue,Male
+</span><span class="line">795156G,Blue,Female
+</span><span class="line">795156I,Blue,Male
+</span><span class="line">795156J,White,Male
+</span><span class="line">795156M,Red,Male
+</span><span class="line">795156N,Blue,Male
+</span><span class="line">795156O,Green,Male
+</span><span class="line">795156P,Red,Male
+</span><span class="line">795156Q,Blue,Male
+</span><span class="line">795156S,White,Male
+</span><span class="line">795156T,Blue,Male
+</span><span class="line">795156W,Red,Female
+</span><span class="line">800731A,Red,Male
+</span><span class="line">800731C,Blue,Male
+</span><span class="line">800731E,Blue,Male
+</span><span class="line">800731F,Blue,Female
+</span><span class="line">800731G,Red,Male
+</span><span class="line">800731I,Blue,Female
+</span><span class="line">800731K,Blue,Female
+</span><span class="line">800731M,Blue,Male
+</span><span class="line">800731N,Blue,Female
+</span><span class="line">800731O,Blue,Female
+</span><span class="line">800731Q,Blue,Male
+</span><span class="line">800731W,Blue,Male
+</span><span class="line">800731X,Red,Male
+</span><span class="line">800731Y,Red,Male
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="reading-the-csv-file">Reading the csv file</h4>
+
+<p>Let’s start with reading the csv file:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">data &lt;- read.csv(file = &#39;sample.csv&#39;, header = TRUE, sep = &#39;,&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The first argument which is mandatory is the name of file. The second argument indicates whether or not the first row is a set of labels and the third argument indicates the delimiter. The above command will read in the csv file and assign it to a variable called “data”.</p>
+
+<p>You can use the following command to see the list of column names:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">names(data)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>which results:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">[1] &quot;ID&quot;     &quot;Color&quot;  &quot;Gender&quot;
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Or you can use following command to see a summary of the data:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">summary(data)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">   ID       Color       Gender
+</span><span class="line"> 792141B: 1   Blue :20   Female: 7
+</span><span class="line"> 795156A: 1   Green: 1   Male  :23
+</span><span class="line"> 795156B: 1   Red  : 7
+</span><span class="line"> 795156C: 1   White: 2
+</span><span class="line"> 795156E: 1
+</span><span class="line"> 795156G: 1
+</span><span class="line"> (Other):24
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<p>As you see, the number of occurrences of each color is shown in the summary. </p>
+
+<h4 id="table-function">Table function</h4>
+
+<p><em>table()</em>  uses the cross-classifying factors to build a contingency table of the counts at each combination of factor levels.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">table(data$Color)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line"> Blue Green   Red White
+</span><span class="line">   20     1     7     2
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="plotting">Plotting</h4>
+
+<p>Now we can plot it easily using the <em>barplot</em> command:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(data$Color))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h4 id="save-the-plot-as-an-image">Save the plot as an image</h4>
+
+<p>I can see the plot on my machine, but to put it here on my weblog, I have to save it as an image:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">dev.copy(png, &#39;freq.png&#39;)
+</span><span class="line">dev.off()
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here you go…</p>
+
+<p><img class="center" src="/images/freq.png" width="380" height="380" /></p>
+
+<h4 id="factor">Factor</h4>
+
+<p>The <em>factor</em> function is used to create a factor (or category) from a vector. </p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">[1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class="line">Levels: Blue Green Red White
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Levels is a unique set of values in the vector.</p>
+
+<p>Now, suppose that “Yellow” was also an option for the users but nobody has chosen it as the favourite color. 
+We can use the <em>factor</em> command to customize the categories:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line"> [1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
+</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
+</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
+</span><span class="line">Levels: Blue Green Yellow Red White
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now, we can see Yellow in the frequency distribution:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">table(factor(data$Color, levels = c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">  Blue  Green Yellow    Red  White
+</span><span class="line">    20      1      0      7      2
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And we can see it on the plot:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="/images/freq1.png" width="380" height="380" /></p>
+
+<p>if you want to see the percentages instead of the values, you can try this:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">t &lt;- table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)))
+</span><span class="line">barplot(t / sum(t))
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="/images/freq2.png" width="380" height="380" /></p>
+
+<h4 id="filtering">Filtering</h4>
+
+<p>Now, let’s imagine that we want to plot the frequency distribution of favourite colors for men and women separately. 
+The following commands create two subsets of data by filtering the gender and store it to two different variables (Don’t forget the comma!):</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">men &lt;- data[data$Gender == &#39;Male&#39;,]
+</span><span class="line">
+</span><span class="line">women &lt;- data[data$Gender == &#39;Female&#39;,]
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>now we can plot the distributions seperately:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(men$Color, levels = l, main = &#39;Men&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(women$Color, levels = l, main = &#39;Women&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img src="/images/freq_men.png" width="380" height="380" /><img src="/images/freq_women.png" width="380" height="380" /></p>
+
+<h4 id="colors-and-labels">Colors and Labels</h4>
+
+<p>Do you like colors and labels?! Here you go…</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)
+</span><span class="line">
+</span><span class="line">barplot(table(factor(data$Color, levels = l)) , col = c(&#39;blue&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;white&#39;), xlab = &#39;Favourite Color&#39;, ylab = &#39;Number Of Users&#39;)
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="/images/freq3.png" width="480" height="480" /></p>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -362,242 +673,6 @@ to download the data set.</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/03/05/how-to-estimate-the-facebook-account-creation-date/">How to Estimate the Facebook Account Creation Date</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-03-05T18:17:00-08:00" pubdate data-updated="true">Mar 5<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Facebook <a href="http://developers.facebook.com/docs/reference/api/">Graph API</a> and 
-<a href="http://developers.facebook.com/docs/reference/fql/">FQL</a> don’t provide you with a simple way of getting the creation date of a Facebook account. 
-But if you have a valid Facebook <a href="http://developers.facebook.com/tools/explorer">Access Token</a> with <em>‘read_stream’</em> permission, it is possible to estimate the Facebook account creation date
-by finding the creation date of the oldest user post. According to the Facebook documentation, </p>
-
-<blockquote>
-  <p>each query of the stream table is limited to the previous 30 days or 50 posts, whichever is greater, however you can use time-specific fields such as created_time along with FQL operators (such as &lt; or &gt;) to retrieve a much greater range of posts.</p>
-</blockquote>
-
-<p>Also you must have <em>‘read_stream’</em> permission:</p>
-
-<blockquote>
-  <p>Querying without the <em>‘read_stream’</em> permission will return only the public view of the data (i.e. data that can be see when the user is logged out).</p>
-</blockquote>
-
-<p>Here is some code to do that:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Estimate the Facebook account age  (AccountAge.php)</span> <a href="/downloads/code/AccountAge.php">download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-<span class="line-number">32</span>
-<span class="line-number">33</span>
-<span class="line-number">34</span>
-<span class="line-number">35</span>
-<span class="line-number">36</span>
-<span class="line-number">37</span>
-<span class="line-number">38</span>
-<span class="line-number">39</span>
-<span class="line-number">40</span>
-<span class="line-number">41</span>
-<span class="line-number">42</span>
-<span class="line-number">43</span>
-<span class="line-number">44</span>
-<span class="line-number">45</span>
-<span class="line-number">46</span>
-<span class="line-number">47</span>
-<span class="line-number">48</span>
-<span class="line-number">49</span>
-<span class="line-number">50</span>
-<span class="line-number">51</span>
-<span class="line-number">52</span>
-<span class="line-number">53</span>
-<span class="line-number">54</span>
-<span class="line-number">55</span>
-<span class="line-number">56</span>
-<span class="line-number">57</span>
-<span class="line-number">58</span>
-<span class="line-number">59</span>
-<span class="line-number">60</span>
-<span class="line-number">61</span>
-<span class="line-number">62</span>
-<span class="line-number">63</span>
-<span class="line-number">64</span>
-<span class="line-number">65</span>
-<span class="line-number">66</span>
-<span class="line-number">67</span>
-<span class="line-number">68</span>
-<span class="line-number">69</span>
-<span class="line-number">70</span>
-<span class="line-number">71</span>
-<span class="line-number">72</span>
-<span class="line-number">73</span>
-<span class="line-number">74</span>
-<span class="line-number">75</span>
-<span class="line-number">76</span>
-<span class="line-number">77</span>
-<span class="line-number">78</span>
-<span class="line-number">79</span>
-<span class="line-number">80</span>
-<span class="line-number">81</span>
-<span class="line-number">82</span>
-<span class="line-number">83</span>
-<span class="line-number">84</span>
-<span class="line-number">85</span>
-<span class="line-number">86</span>
-<span class="line-number">87</span>
-<span class="line-number">88</span>
-<span class="line-number">89</span>
-<span class="line-number">90</span>
-<span class="line-number">91</span>
-</pre></td><td class="code"><pre><code class="php"><span class="line"><span class="o">&lt;?</span><span class="nx">php</span>
-</span><span class="line"><span class="sd">/**</span>
-</span><span class="line"><span class="sd"> * Estimating the Facebook account age by finding the creation date of the oldest post.</span>
-</span><span class="line"><span class="sd"> * A valid Facebook Access Token with read_stream permission is required.</span>
-</span><span class="line"><span class="sd"> *</span>
-</span><span class="line"><span class="sd"> * @author Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
-</span><span class="line"><span class="sd"> */</span>
-</span><span class="line">
-</span><span class="line"><span class="k">class</span> <span class="nc">AccountAge</span>
-</span><span class="line"><span class="p">{</span>
-</span><span class="line">
-</span><span class="line">	<span class="k">public</span> <span class="nv">$baseUrl</span><span class="p">;</span>
-</span><span class="line">
-</span><span class="line">	<span class="k">function</span> <span class="nf">__construct</span><span class="p">()</span>
-</span><span class="line">	<span class="p">{</span>
-</span><span class="line">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span> <span class="o">=</span> <span class="s1">&#39;https://graph.facebook.com/&#39;</span><span class="p">;</span>
-</span><span class="line">	<span class="p">}</span>
-</span><span class="line">
-</span><span class="line">	<span class="sd">/**</span>
-</span><span class="line"><span class="sd">	 * Run a Facebook FQL query</span>
-</span><span class="line"><span class="sd">	 * @param string $fql Facebook query </span>
-</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
-</span><span class="line"><span class="sd">	 * @return array Return Facebook query result</span>
-</span><span class="line"><span class="sd">	 */</span>
-</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">)</span>
-</span><span class="line">	<span class="p">{</span>
-</span><span class="line">		<span class="nv">$url</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">baseUrl</span>	<span class="o">.</span> <span class="s1">&#39;fql?q=&#39;</span> <span class="o">.</span> <span class="nb">urlencode</span><span class="p">(</span><span class="nv">$fql</span><span class="p">)</span>
-</span><span class="line">			<span class="o">.</span> <span class="s1">&#39;&amp;access_token=&#39;</span> <span class="o">.</span> <span class="nv">$access_token</span><span class="p">;</span>
-</span><span class="line">		<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">(</span><span class="nv">$url</span><span class="p">);</span>
-</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_TIMEOUT</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
-</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class="line">		<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class="line">
-</span><span class="line">		<span class="nv">$decodedResult</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">),</span> <span class="k">true</span><span class="p">);</span>
-</span><span class="line">		<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
-</span><span class="line">
-</span><span class="line">		<span class="nv">$result</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span><span class="line">		<span class="k">if</span><span class="p">(</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
-</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$decodedResult</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">];</span>
-</span><span class="line">		<span class="k">else</span>
-</span><span class="line">			<span class="k">throw</span> <span class="k">new</span> <span class="nx">Exception</span><span class="p">(</span><span class="s2">&quot;Facebook FQL Error. Please check if the access token is valid.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">);</span>
-</span><span class="line">
-</span><span class="line">		<span class="k">return</span> <span class="nv">$result</span><span class="p">;</span>
-</span><span class="line">	<span class="p">}</span>
-</span><span class="line">
-</span><span class="line">	<span class="sd">/**</span>
-</span><span class="line"><span class="sd">	 * Estimate the account age by finding the creation date of the oldest post</span>
-</span><span class="line"><span class="sd">	 * @param string $access_token Facebook Access Token</span>
-</span><span class="line"><span class="sd">	 * @return integer Return the Facebook account age in seconds</span>
-</span><span class="line"><span class="sd">	 */</span>
-</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">)</span>
-</span><span class="line">	<span class="p">{</span>
-</span><span class="line">		<span class="nv">$date</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\DateTime</span><span class="p">(</span><span class="s1">&#39;now&#39;</span><span class="p">);</span>
-</span><span class="line">		<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">();</span>
-</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Finding the oldest post may take several minutes to complete.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;# Please wait &quot;</span><span class="p">;</span>
-</span><span class="line">		<span class="k">while</span> <span class="p">(</span><span class="k">true</span><span class="p">){</span> <span class="c1">// Loop until finding the oldest post</span>
-</span><span class="line">			<span class="k">echo</span> <span class="s2">&quot;.&quot;</span><span class="p">;</span>
-</span><span class="line">			<span class="nv">$fql</span> <span class="o">=</span> <span class="s2">&quot;SELECT created_time FROM stream WHERE source_id = me()&quot;</span>
-</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; AND created_time &lt; &quot;</span> <span class="o">.</span> <span class="nv">$timestamp</span>
-</span><span class="line">				<span class="o">.</span> <span class="s2">&quot; ORDER BY created_time ASC LIMIT 5000&quot;</span><span class="p">;</span>
-</span><span class="line">			<span class="nv">$result</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">doFQLRequest</span><span class="p">(</span><span class="nv">$fql</span><span class="p">,</span> <span class="nv">$access_token</span><span class="p">);</span>
-</span><span class="line">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">]))</span>
-</span><span class="line">				<span class="k">break</span><span class="p">;</span>
-</span><span class="line">			<span class="nv">$timestamp</span> <span class="o">=</span> <span class="nv">$result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;created_time&#39;</span><span class="p">];</span>
-</span><span class="line">		<span class="p">}</span>
-</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span class="line">		<span class="nv">$age</span> <span class="o">=</span> <span class="nv">$date</span><span class="o">-&gt;</span><span class="na">getTimestamp</span><span class="p">()</span> <span class="o">-</span> <span class="nv">$timestamp</span><span class="p">;</span>
-</span><span class="line">		<span class="k">return</span> <span class="nv">$age</span><span class="p">;</span>
-</span><span class="line">	<span class="p">}</span>
-</span><span class="line">
-</span><span class="line">
-</span><span class="line">	<span class="sd">/**</span>
-</span><span class="line"><span class="sd">	 * Display the account age in a human readable format</span>
-</span><span class="line"><span class="sd">	 * @param int $age Account age in seconds</span>
-</span><span class="line"><span class="sd">	 */</span>
-</span><span class="line">	<span class="k">public</span> <span class="k">function</span> <span class="nf">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">)</span>
-</span><span class="line">	<span class="p">{</span>
-</span><span class="line">		<span class="nv">$years</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">(</span><span class="nv">$age</span> <span class="o">/</span> <span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class="line">		<span class="nv">$months</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class="line">		<span class="nv">$days</span> <span class="o">=</span> <span class="nx">floor</span><span class="p">((</span><span class="nv">$age</span> <span class="o">-</span> <span class="nv">$years</span> <span class="o">*</span> <span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span> <span class="o">-</span> <span class="nv">$months</span> <span class="o">*</span> <span class="mi">30</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">24</span><span class="o">*</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">));</span>
-</span><span class="line">		<span class="k">echo</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Account age: </span><span class="si">$years</span><span class="s2"> years, </span><span class="si">$months</span><span class="s2"> months, </span><span class="si">$days</span><span class="s2"> days</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">;</span>	
-</span><span class="line">	<span class="p">}</span>
-</span><span class="line">
-</span><span class="line"><span class="p">}</span>
-</span><span class="line">
-</span><span class="line"><span class="nv">$p</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">AccountAge</span><span class="p">();</span>
-</span><span class="line"><span class="c1">// You need an Access Token with a read_stream permission</span>
-</span><span class="line"><span class="nv">$access_token</span> <span class="o">=</span> <span class="s1">&#39;AAACEdEose0cBAOY7bB3A9m7s3U6hbuJvfECxuZBFRN6YjqPC2eZB5x8WrnK51Gl3WsdwYovmxdPZCKFyJKB5TuFhpxsDJpAZCe9y6eutyQZDZD&#39;</span><span class="p">;</span>
-</span><span class="line"><span class="nv">$age</span> <span class="o">=</span> <span class="nv">$p</span><span class="o">-&gt;</span><span class="na">getAccountAge</span><span class="p">(</span><span class="nv">$access_token</span><span class="p">);</span>
-</span><span class="line"><span class="nv">$p</span><span class="o">-&gt;</span><span class="na">printAccountAge</span><span class="p">(</span><span class="nv">$age</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/./page/3/">&larr; Older</a>
@@ -621,6 +696,10 @@ by finding the creation date of the oldest user post. According to the Facebook 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/09/22/add-unique-id-column-to-csv-files/">Add Unique ID column to CSV Files</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/02/27/random-sampling-from-very-large-files/">Random sampling from very large files</a>
       </li>
     
@@ -634,10 +713,6 @@ by finding the creation date of the oldest user post. According to the Facebook 
     
       <li class="post">
         <a href="/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">Inferring Facebook account creation date from Facebook User ID</a>
       </li>
     
   </ul>

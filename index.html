@@ -25,8 +25,7 @@
   <meta name="author" content="Massoud Seifi">
 
   
-  <meta name="description" content="Random Sampling Random sampling from a set of entities means any entity has the same chance of selection as any other such entities.
-Suppose we want &hellip;">
+  <meta name="description" content="If you want to add a unique id column to the end of a CSV file, you can simply do it via a bash script following the steps below: Count the number of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -132,6 +131,168 @@ Suppose we want &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2015/09/22/add-unique-id-column-to-csv-files/">Add Unique ID Column to CSV Files</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2015-09-22T15:23:14-07:00" pubdate data-updated="true">Sep 22<span>nd</span>, 2015</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you want to add a unique id column to the end of a CSV file, you can simply do it via a bash script following the steps below:</p>
+
+<ul>
+  <li>Count the number of lines in the input file using <code>wc</code> command and save it to a variable.</li>
+  <li>Create a temoprary file using <code>tempfile</code> command.</li>
+  <li>Using <code>uuidgen</code> command, generate n(=<em>#lines</em>) unique ids and save them to the temporary file.</li>
+  <li>Merge the input file with the temporary file containing unique ids using <code>paste</code> command.</li>
+  <li>Remove the temporary file.</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Add unique ids to a CSV file  (gen_uid.sh)</span> <a href="/downloads/code/gen_uid.sh">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c">#!/bin/bash</span>
+</span><span class="line"><span class="c"># Author: Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Count the number of lines in the input file</span>
+</span><span class="line"><span class="nv">lines</span><span class="o">=</span><span class="k">$(</span>wc -l &lt; <span class="s2">&quot;$1&quot;</span><span class="k">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Generate unique ids and store them in a temporary file</span>
+</span><span class="line"><span class="nv">uids</span><span class="o">=</span><span class="k">$(</span>tempfile<span class="k">)</span>
+</span><span class="line"><span class="k">for </span>i in <span class="sb">`</span>seq 1 <span class="nv">$lines</span><span class="sb">`</span>; <span class="k">do </span>uuidgen -t; <span class="k">done</span> &gt; <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Insert the unique ids at the end of each line of the input file</span>
+</span><span class="line">paste --delimiter <span class="s2">&quot;,&quot;</span> <span class="s2">&quot;$1&quot;</span> <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Remove the temporary file</span>
+</span><span class="line">rm <span class="s2">&quot;$uids&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>For example, running the script on the sample CSV file below:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample CSV file  (test.csv)</span> <a href="/downloads/code/test.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">Mike,Smith,29
+</span><span class="line">Jane,Clark,18
+</span><span class="line">Brian,Jones,21
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$.</span>/gen_uid.sh test.csv
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The output will be:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">Mike,Smith,29,e802dbee-617a-11e5-9c46-0862664fe7a7
+</span><span class="line">Jane,Clark,18,e802ef30-617a-11e5-9c46-0862664fe7a7
+</span><span class="line">Brian,Jones,21,e80302e0-617a-11e5-9c46-0862664fe7a7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If first line of your CSV file is the column headings, you can use code below:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Add unique ids to a CSV file with headers  (gen_uid_header.sh)</span> <a href="/downloads/code/gen_uid_header.sh">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c">#!/bin/bash</span>
+</span><span class="line"><span class="c"># Author: Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Count the number of lines in the input file</span>
+</span><span class="line"><span class="nv">lines</span><span class="o">=</span><span class="k">$(</span>wc -l &lt; <span class="s2">&quot;$1&quot;</span><span class="k">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Generate unique ids and store them in a temporary file</span>
+</span><span class="line"><span class="nv">uids</span><span class="o">=</span><span class="k">$(</span>tempfile<span class="k">)</span>
+</span><span class="line"><span class="k">for </span>i in <span class="sb">`</span>seq 1 <span class="nv">$lines</span><span class="sb">`</span>; <span class="k">do if</span> <span class="o">[</span> <span class="nv">$i</span> <span class="o">==</span> 1 <span class="o">]</span>; <span class="k">then </span><span class="nb">echo</span> <span class="s2">&quot;uid&quot;</span>; <span class="k">else </span>uuidgen -t; <span class="k">fi</span>; <span class="k">done</span> &gt; <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Insert the unique ids at the end of each line of the input file</span>
+</span><span class="line">paste --delimiter <span class="s2">&quot;,&quot;</span> <span class="s2">&quot;$1&quot;</span> <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Remove the temporary file</span>
+</span><span class="line">rm <span class="s2">&quot;$uids&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample CSV file with headers  (test_header.csv)</span> <a href="/downloads/code/test_header.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">first_name,last_name,age
+</span><span class="line">Mike,Smith,29
+</span><span class="line">Jane,Clark,18
+</span><span class="line">Brian,Jones,21
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$.</span>/gen_uid_heade.sh test_header.csv
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">first_name,last_name,age,uid
+</span><span class="line">Mike,Smith,29,76de1cc4-617c-11e5-9c46-0862664fe7a7
+</span><span class="line">Jane,Clark,18,76de2de0-617c-11e5-9c46-0862664fe7a7
+</span><span class="line">Brian,Jones,21,76de3f2e-617c-11e5-9c46-0862664fe7a7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -647,317 +808,6 @@ However an account can never change its Twitter ID, but it can change its userna
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2013/07/03/plotting-the-frequency-distribution-using-r/">Plotting the Frequency Distribution Using R</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-07-03T12:22:00-07:00" pubdate data-updated="true">Jul 3<span>rd</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h3 id="introduction">Introduction</h3>
-
-<p><a href="http://www.r-project.org/">R</a> is an open source language and environment for statistical computing and graphics. 
-It’s an implementation of the <a href="http://en.wikipedia.org/wiki/S_(programming_language)">S language</a> which was developed at Bell Laboratories by John Chambers and colleagues.
-R provides a wide variety of statistical and graphical techniques, including linear and nonlinear modeling, classical statistical tests, time-series analysis, classification, clustering, and others. 
-It is also an interpreted language and can be accessed through a command-line interpreter: For example, if a user types “2+2” at the R command prompt and press enter, the computer replies with “4”.
-R is freely available under the GNU General Public License.</p>
-
-<h3 id="plotting-the-frequency-distribution">Plotting The Frequency Distribution</h3>
-
-<h4 id="frequency-distribution">Frequency distribution</h4>
-
-<p>A frequency distribution shows the number of occurrences in each category of a categorical variable. 
-For example, in a sample set of users with their favourite colors, we can find out how many users like a specific color.</p>
-
-<h4 id="data-set">Data set</h4>
-
-<p>Suppose a data set of 30 records including user ID, favorite color and gender:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample Set  (sample.csv)</span> <a href="/downloads/code/sample.csv">download</a></figcaption>
-<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-<span class="line-number">9</span>
-<span class="line-number">10</span>
-<span class="line-number">11</span>
-<span class="line-number">12</span>
-<span class="line-number">13</span>
-<span class="line-number">14</span>
-<span class="line-number">15</span>
-<span class="line-number">16</span>
-<span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
-<span class="line-number">20</span>
-<span class="line-number">21</span>
-<span class="line-number">22</span>
-<span class="line-number">23</span>
-<span class="line-number">24</span>
-<span class="line-number">25</span>
-<span class="line-number">26</span>
-<span class="line-number">27</span>
-<span class="line-number">28</span>
-<span class="line-number">29</span>
-<span class="line-number">30</span>
-<span class="line-number">31</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">ID,Color,Gender
-</span><span class="line">792141B,Blue,Male
-</span><span class="line">795156A,Blue,Male
-</span><span class="line">795156B,Blue,Male
-</span><span class="line">795156C,Blue,Male
-</span><span class="line">795156E,Blue,Male
-</span><span class="line">795156G,Blue,Female
-</span><span class="line">795156I,Blue,Male
-</span><span class="line">795156J,White,Male
-</span><span class="line">795156M,Red,Male
-</span><span class="line">795156N,Blue,Male
-</span><span class="line">795156O,Green,Male
-</span><span class="line">795156P,Red,Male
-</span><span class="line">795156Q,Blue,Male
-</span><span class="line">795156S,White,Male
-</span><span class="line">795156T,Blue,Male
-</span><span class="line">795156W,Red,Female
-</span><span class="line">800731A,Red,Male
-</span><span class="line">800731C,Blue,Male
-</span><span class="line">800731E,Blue,Male
-</span><span class="line">800731F,Blue,Female
-</span><span class="line">800731G,Red,Male
-</span><span class="line">800731I,Blue,Female
-</span><span class="line">800731K,Blue,Female
-</span><span class="line">800731M,Blue,Male
-</span><span class="line">800731N,Blue,Female
-</span><span class="line">800731O,Blue,Female
-</span><span class="line">800731Q,Blue,Male
-</span><span class="line">800731W,Blue,Male
-</span><span class="line">800731X,Red,Male
-</span><span class="line">800731Y,Red,Male
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h4 id="reading-the-csv-file">Reading the csv file</h4>
-
-<p>Let’s start with reading the csv file:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">data &lt;- read.csv(file = &#39;sample.csv&#39;, header = TRUE, sep = &#39;,&#39;)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>The first argument which is mandatory is the name of file. The second argument indicates whether or not the first row is a set of labels and the third argument indicates the delimiter. The above command will read in the csv file and assign it to a variable called “data”.</p>
-
-<p>You can use the following command to see the list of column names:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">names(data)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-<p>which results:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">[1] &quot;ID&quot;     &quot;Color&quot;  &quot;Gender&quot;
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Or you can use following command to see a summary of the data:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">summary(data)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-<span class="line-number">6</span>
-<span class="line-number">7</span>
-<span class="line-number">8</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">   ID       Color       Gender
-</span><span class="line"> 792141B: 1   Blue :20   Female: 7
-</span><span class="line"> 795156A: 1   Green: 1   Male  :23
-</span><span class="line"> 795156B: 1   Red  : 7
-</span><span class="line"> 795156C: 1   White: 2
-</span><span class="line"> 795156E: 1
-</span><span class="line"> 795156G: 1
-</span><span class="line"> (Other):24
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-<p>As you see, the number of occurrences of each color is shown in the summary. </p>
-
-<h4 id="table-function">Table function</h4>
-
-<p><em>table()</em>  uses the cross-classifying factors to build a contingency table of the counts at each combination of factor levels.</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">table(data$Color)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line"> Blue Green   Red White
-</span><span class="line">   20     1     7     2
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h4 id="plotting">Plotting</h4>
-
-<p>Now we can plot it easily using the <em>barplot</em> command:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(data$Color))
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<h4 id="save-the-plot-as-an-image">Save the plot as an image</h4>
-
-<p>I can see the plot on my machine, but to put it here on my weblog, I have to save it as an image:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">dev.copy(png, &#39;freq.png&#39;)
-</span><span class="line">dev.off()
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Here you go…</p>
-
-<p><img class="center" src="/images/freq.png" width="380" height="380" /></p>
-
-<h4 id="factor">Factor</h4>
-
-<p>The <em>factor</em> function is used to create a factor (or category) from a vector. </p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">[1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
-</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
-</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
-</span><span class="line">Levels: Blue Green Red White
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Levels is a unique set of values in the vector.</p>
-
-<p>Now, suppose that “Yellow” was also an option for the users but nobody has chosen it as the favourite color. 
-We can use the <em>factor</em> command to customize the categories:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line"> [1] Blue  Blue  Blue  Blue  Blue  Blue  Blue  White Red   Blue  Green Red
-</span><span class="line">[13] Blue  White Blue  Red   Red   Blue  Blue  Blue  Red   Blue  Blue  Blue
-</span><span class="line">[25] Blue  Blue  Blue  Blue  Red   Red
-</span><span class="line">Levels: Blue Green Yellow Red White
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>Now, we can see Yellow in the frequency distribution:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">table(factor(data$Color, levels = c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)))
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">  Blue  Green Yellow    Red  White
-</span><span class="line">    20      1      0      7      2
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>And we can see it on the plot:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">barplot(table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;))))
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p><img class="center" src="/images/freq1.png" width="380" height="380" /></p>
-
-<p>if you want to see the percentages instead of the values, you can try this:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">t &lt;- table(factor(data$Color, levels = c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)))
-</span><span class="line">barplot(t / sum(t))
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p><img class="center" src="/images/freq2.png" width="380" height="380" /></p>
-
-<h4 id="filtering">Filtering</h4>
-
-<p>Now, let’s imagine that we want to plot the frequency distribution of favourite colors for men and women separately. 
-The following commands create two subsets of data by filtering the gender and store it to two different variables (Don’t forget the comma!):</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">men &lt;- data[data$Gender == &#39;Male&#39;,]
-</span><span class="line">
-</span><span class="line">women &lt;- data[data$Gender == &#39;Female&#39;,]
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p>now we can plot the distributions seperately:</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-<span class="line-number">4</span>
-<span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;, &#39;Green&#39;, &#39;Yellow&#39;, &#39;Red&#39;, &#39;White&#39;)
-</span><span class="line">
-</span><span class="line">barplot(table(factor(men$Color, levels = l, main = &#39;Men&#39;)
-</span><span class="line">
-</span><span class="line">barplot(table(factor(women$Color, levels = l, main = &#39;Women&#39;)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p><img src="/images/freq_men.png" width="380" height="380" /><img src="/images/freq_women.png" width="380" height="380" /></p>
-
-<h4 id="colors-and-labels">Colors and Labels</h4>
-
-<p>Do you like colors and labels?! Here you go…</p>
-
-<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-<span class="line-number">2</span>
-<span class="line-number">3</span>
-</pre></td><td class="code"><pre><code class="text"><span class="line">l &lt;- c(&#39;Blue&#39;,&#39;Green&#39;,&#39;Yellow&#39;,&#39;Red&#39;,&#39;White&#39;)
-</span><span class="line">
-</span><span class="line">barplot(table(factor(data$Color, levels = l)) , col = c(&#39;blue&#39;, &#39;green&#39;, &#39;yellow&#39;, &#39;red&#39;, &#39;white&#39;), xlab = &#39;Favourite Color&#39;, ylab = &#39;Number Of Users&#39;)
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-
-<p><img class="center" src="/images/freq3.png" width="480" height="480" /></p>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/./page/2/">&larr; Older</a>
@@ -979,6 +829,10 @@ The following commands create two subsets of data by filtering the gender and st
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2015/09/22/add-unique-id-column-to-csv-files/">Add Unique ID column to CSV Files</a>
+      </li>
+    
+      <li class="post">
         <a href="/2014/02/27/random-sampling-from-very-large-files/">Random sampling from very large files</a>
       </li>
     
@@ -992,10 +846,6 @@ The following commands create two subsets of data by filtering the gender and st
     
       <li class="post">
         <a href="/2013/03/14/lookup-table-for-inferring-facebook-account-creation-date-from-facebook-user-id/">Lookup Table for Inferring Facebook Account Creation Date From Facebook User ID</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2013/03/11/inferring-facebook-account-creation-date-from-facebook-user-id/">Inferring Facebook account creation date from Facebook User ID</a>
       </li>
     
   </ul>

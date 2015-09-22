@@ -4,7 +4,7 @@
   <title><![CDATA[Meta Data Science]]></title>
   <link href="http://metadatascience.com/atom.xml" rel="self"/>
   <link href="http://metadatascience.com/"/>
-  <updated>2015-09-21T16:16:14-07:00</updated>
+  <updated>2015-09-22T16:25:52-07:00</updated>
   <id>http://metadatascience.com/</id>
   <author>
     <name><![CDATA[Massoud Seifi]]></name>
@@ -12,6 +12,141 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Add Unique ID Column to CSV Files]]></title>
+    <link href="http://metadatascience.com/2015/09/22/add-unique-id-column-to-csv-files/"/>
+    <updated>2015-09-22T15:23:14-07:00</updated>
+    <id>http://metadatascience.com/2015/09/22/add-unique-id-column-to-csv-files</id>
+    <content type="html"><![CDATA[<p>If you want to add a unique id column to the end of a CSV file, you can simply do it via a bash script following the steps below:</p>
+
+<ul>
+  <li>Count the number of lines in the input file using <code>wc</code> command and save it to a variable.</li>
+  <li>Create a temoprary file using <code>tempfile</code> command.</li>
+  <li>Using <code>uuidgen</code> command, generate n(=<em>#lines</em>) unique ids and save them to the temporary file.</li>
+  <li>Merge the input file with the temporary file containing unique ids using <code>paste</code> command.</li>
+  <li>Remove the temporary file.</li>
+</ul>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Add unique ids to a CSV file  (gen_uid.sh)</span> <a href="http://metadatascience.com/downloads/code/gen_uid.sh">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c">#!/bin/bash</span>
+</span><span class="line"><span class="c"># Author: Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Count the number of lines in the input file</span>
+</span><span class="line"><span class="nv">lines</span><span class="o">=</span><span class="k">$(</span>wc -l &lt; <span class="s2">&quot;$1&quot;</span><span class="k">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Generate unique ids and store them in a temporary file</span>
+</span><span class="line"><span class="nv">uids</span><span class="o">=</span><span class="k">$(</span>tempfile<span class="k">)</span>
+</span><span class="line"><span class="k">for </span>i in <span class="sb">`</span>seq 1 <span class="nv">$lines</span><span class="sb">`</span>; <span class="k">do </span>uuidgen -t; <span class="k">done</span> &gt; <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Insert the unique ids at the end of each line of the input file</span>
+</span><span class="line">paste --delimiter <span class="s2">&quot;,&quot;</span> <span class="s2">&quot;$1&quot;</span> <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Remove the temporary file</span>
+</span><span class="line">rm <span class="s2">&quot;$uids&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>For example, running the script on the sample CSV file below:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample CSV file  (test.csv)</span> <a href="http://metadatascience.com/downloads/code/test.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">Mike,Smith,29
+</span><span class="line">Jane,Clark,18
+</span><span class="line">Brian,Jones,21
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$.</span>/gen_uid.sh test.csv
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The output will be:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">Mike,Smith,29,e802dbee-617a-11e5-9c46-0862664fe7a7
+</span><span class="line">Jane,Clark,18,e802ef30-617a-11e5-9c46-0862664fe7a7
+</span><span class="line">Brian,Jones,21,e80302e0-617a-11e5-9c46-0862664fe7a7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If first line of your CSV file is the column headings, you can use code below:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Add unique ids to a CSV file with headers  (gen_uid_header.sh)</span> <a href="http://metadatascience.com/downloads/code/gen_uid_header.sh">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="c">#!/bin/bash</span>
+</span><span class="line"><span class="c"># Author: Massoud Seifi, Ph.D. @ MetaDataScience.com</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Count the number of lines in the input file</span>
+</span><span class="line"><span class="nv">lines</span><span class="o">=</span><span class="k">$(</span>wc -l &lt; <span class="s2">&quot;$1&quot;</span><span class="k">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Generate unique ids and store them in a temporary file</span>
+</span><span class="line"><span class="nv">uids</span><span class="o">=</span><span class="k">$(</span>tempfile<span class="k">)</span>
+</span><span class="line"><span class="k">for </span>i in <span class="sb">`</span>seq 1 <span class="nv">$lines</span><span class="sb">`</span>; <span class="k">do if</span> <span class="o">[</span> <span class="nv">$i</span> <span class="o">==</span> 1 <span class="o">]</span>; <span class="k">then </span><span class="nb">echo</span> <span class="s2">&quot;uid&quot;</span>; <span class="k">else </span>uuidgen -t; <span class="k">fi</span>; <span class="k">done</span> &gt; <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Insert the unique ids at the end of each line of the input file</span>
+</span><span class="line">paste --delimiter <span class="s2">&quot;,&quot;</span> <span class="s2">&quot;$1&quot;</span> <span class="s2">&quot;$uids&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Remove the temporary file</span>
+</span><span class="line">rm <span class="s2">&quot;$uids&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span>Sample CSV file with headers  (test_header.csv)</span> <a href="http://metadatascience.com/downloads/code/test_header.csv">download</a></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="text"><span class="line">first_name,last_name,age
+</span><span class="line">Mike,Smith,29
+</span><span class="line">Jane,Clark,18
+</span><span class="line">Brian,Jones,21
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line"><span class="nv">$.</span>/gen_uid_heade.sh test_header.csv
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="bash"><span class="line">first_name,last_name,age,uid
+</span><span class="line">Mike,Smith,29,76de1cc4-617c-11e5-9c46-0862664fe7a7
+</span><span class="line">Jane,Clark,18,76de2de0-617c-11e5-9c46-0862664fe7a7
+</span><span class="line">Brian,Jones,21,76de3f2e-617c-11e5-9c46-0862664fe7a7
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Random Sampling From Very Large Files]]></title>
